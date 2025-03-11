@@ -14,17 +14,17 @@ in secondlife.
    extension ([github link](https://github.com/JohnnyMorganz/luau-lsp))
 3. Download a `sl_lua_types.zip` from
    [here](https://github.com/WolfGangS/sl_lua_types/releases/latest)
-4. Extract and place those files somewhere memorable (`<user_dir>/sl-luau/` for
+4. Extract and place those files somewhere memorable (`<user_dir>/.sl-luau/` for
    instance)
 5. Then Either globaly or in your project add the 2 files to the options with
    the following config
 
    ```JSON
    "luau-lsp.types.definitionFiles": [
-       "~/sl-luau/ll.d.luau"
+       "~/.sl-luau/ll.d.luau"
    ],
    "luau-lsp.types.documentationFiles": [
-       "./sl-luau/ll.json"
+       "~/.sl-luau/ll.d.json"
    ],
    "luau-lsp.platform.type": "standard"
    ```
