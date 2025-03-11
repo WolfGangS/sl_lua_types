@@ -1,0 +1,10 @@
+{
+  "tasks": {
+    "build": "deno task build-defs && deno task build-docs",
+    "build-defs": "deno -R main.ts data/keywords_lsl_formatted.llsd.xml defs > out/ll.d.luau",
+    "build-docs": "deno -R main.ts data/keywords_lsl_formatted.llsd.xml docs > out/ll.d.json"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1"
+  }
+}
