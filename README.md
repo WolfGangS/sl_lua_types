@@ -4,13 +4,15 @@ See [here](https://wiki.secondlife.com/wiki/Luau_Alpha) and
 [here](https://wiki.secondlife.com/wiki/Lua_FAQ) for more information about lua
 in secondlife.
 
+<img src="images/example.png" alt="Example of syntax highlighting and hovertips" />
+
 ## VSCode installaion
 
 1. Install vscode
 2. Install
    [this](https://marketplace.visualstudio.com/items?itemName=JohnnyMorganz.luau-lsp)
    extension ([github link](https://github.com/JohnnyMorganz/luau-lsp))
-3. Download a release from
+3. Download a `sl_lua_types.zip` from
    [here](https://github.com/WolfGangS/sl_lua_types/releases/latest)
 4. Extract and place those files somewhere memorable (`<user_dir>/sl-luau/` for
    instance)
