@@ -11,6 +11,8 @@ Created with plenty of help and original findings from
 
 ## VSCode installaion
 
+### Setup luau-lsp
+
 1. Install vscode
 2. Install
    [this](https://marketplace.visualstudio.com/items?itemName=JohnnyMorganz.luau-lsp)
@@ -35,3 +37,10 @@ Created with plenty of help and original findings from
    or through the UI
 
 6. You may need to restart vscode or reload the ui
+
+### Setup Selene
+
+1. add the the `llsel.yml` to selene
+2. I'll finish this list later
+3. ...
+4. profit
