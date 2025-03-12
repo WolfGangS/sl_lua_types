@@ -6,6 +6,9 @@ in secondlife.
 
 <img src="images/example.png" alt="Example of syntax highlighting and hovertips" />
 
+Created with plenty of help and original findings from
+[@gwigz](https://github.com/gwigz)
+
 ## VSCode installaion
 
 1. Install vscode
