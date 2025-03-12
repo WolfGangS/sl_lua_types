@@ -68,14 +68,11 @@ function outputFunctionDefs(funcs: Map, globals: SeleneGlobals) {
     const [name, map] = entry;
     if (!isMap(map)) continue;
     const result = map.get("return")?.text ?? "void";
-    const func: SeleneFuncDef = {};
     const args = buildFuncArgs(map.get("arguments"));
-    if (args.length) {
-      func["args"] = args;
-    }
-    func["observes"] = "read";
-    func["must_use"] = mustUseFunc(name, result);
-    globals["ll." + name.substring(2)] = func;
+    globals["ll." + name.substring(2)] = {
+      args,
+      must_use: mustUseFunc(name, result),
+    };
   }
 }
 
@@ -100,6 +97,7 @@ function buildFuncArgs(argArray: Node | null): SeleneArgDef[] {
         args.push({
           required: true,
           type: type,
+          observes: "read",
         });
       }
     }
@@ -116,6 +114,7 @@ function remapLSLArgType(type: string | null | undefined): SeleneArgDefType {
         return "number";
       case "list":
         return "table";
+      case "key":
       case "string":
         return "string";
       case "rotation":
