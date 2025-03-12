@@ -4,8 +4,7 @@ import { buildDefs, buildDocs } from "./luau-lsp-gen.ts";
 import { buildDefs as buildSelene } from "./selene-gen.ts";
 
 const strict: boolean = true; // change to false for HTML parsing
-const options: {} = {}; // refer to "Arguments" section
-const parser = new SAXParser(strict, options);
+const parser = new SAXParser(strict, {});
 
 let depth = 0;
 
@@ -17,7 +16,7 @@ const lastNode = (): Node | null => {
   return tag_depth[tag_depth.length - 1] ?? null;
 };
 
-parser.ontext = function (text: any) {
+parser.ontext = function (text: string) {
   const n = lastNode();
   if (n) n.text = text;
 };

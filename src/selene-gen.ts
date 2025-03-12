@@ -91,7 +91,7 @@ function buildFuncArgs(argArray: Node | null): SeleneArgDef[] {
         continue;
       }
       for (const arg of argMap.content) {
-        const [name, map] = arg;
+        const [_name, map] = arg;
         if (!isMap(map)) continue;
         const type = remapLSLArgType(map.get("type")?.text);
         args.push({

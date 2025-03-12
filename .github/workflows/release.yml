@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - gha/*
     tags:
       - "v*"
 
@@ -16,8 +17,20 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+      - name: Node CI
+        run: npm ci
+      - name: Download
+        env:
+          BOT_FIRST_NAME: ${{ secrets.BOT_FIRST_NAME }}
+          BOT_LAST_NAME: ${{ secrets.BOT_LAST_NAME }}
+          BOT_PASSWORD: ${{ secrets.BOT_PASSWORD }}
+          BOT_LOCATION: ${{ secrets.BOT_LOCATION }}
+        run: npx tsc download/keywords.ts && node download/keywords.js "$BOT_FIRST_NAME" "$BOT_LAST_NAME" "$BOT_PASSWORD" "$BOT_LOCATION"
       - name: Build
-        run: deno task build
+        run: deno task build-dl
       - uses: actions/upload-artifact@v4
         with:
           name: outputs

@@ -1,1 +1,4 @@
 .vscode/
+Makefile
+node_modules/
+*.js

@@ -4,8 +4,11 @@
     "jsr:@libs/xml@*": "6.0.4",
     "jsr:@maxim-mazurok/sax-ts@*": "1.2.13",
     "jsr:@std/bytes@^1.0.5": "1.0.5",
+    "jsr:@std/encoding@*": "1.0.7",
+    "jsr:@std/encoding@1": "1.0.7",
     "jsr:@std/streams@*": "1.0.9",
-    "jsr:@std/yaml@*": "1.0.5"
+    "jsr:@std/yaml@*": "1.0.5",
+    "jsr:@takker/md5@*": "0.1.0"
   },
   "jsr": {
     "@libs/xml@6.0.4": {
@@ -17,6 +20,9 @@
     "@std/bytes@1.0.5": {
       "integrity": "4465dd739d7963d964c809202ebea6d5c6b8e3829ef25c6a224290fbb8a1021e"
     },
+    "@std/encoding@1.0.7": {
+      "integrity": "f631247c1698fef289f2de9e2a33d571e46133b38d042905e3eac3715030a82d"
+    },
     "@std/streams@1.0.9": {
       "integrity": "a9d26b1988cdd7aa7b1f4b51e1c36c1557f3f252880fa6cc5b9f37078b1a5035",
       "dependencies": [
@@ -25,11 +31,20 @@
     },
     "@std/yaml@1.0.5": {
       "integrity": "71ba3d334305ee2149391931508b2c293a8490f94a337eef3a09cade1a2a2742"
+    },
+    "@takker/md5@0.1.0": {
+      "integrity": "4c423d8247aadf7bcb1eb83c727bf28c05c21906e916517395d00aa157b6eae0"
     }
   },
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@1"
-    ]
+    ],
+    "packageJson": {
+      "dependencies": [
+        "npm:@caspertech/node-metaverse@~0.8.1",
+        "npm:typescript@^5.8.2"
+      ]
+    }
   }
 }
