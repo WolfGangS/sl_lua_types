@@ -18,9 +18,11 @@ jobs:
         with:
           deno-version: v2.x
       - uses: actions/setup-node@v4
+        if: github.event_name != 'push'
         with:
           node-version: "22.x"
       - name: Node CI
+        if: github.event_name != 'push'
         run: npm ci
       - name: Download
         if: github.event_name != 'push'
