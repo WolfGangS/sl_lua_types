@@ -15,12 +15,33 @@ export function buildDefs(map: Map) {
 }
 
 export function buildDocs(map: Map) {
-  const docs: { [k: string]: doc } = {};
-  docs["@roblox/global/ll"] = {
-    documentation:
-      "The global LL object that stored all the ll specific functions",
-    learn_more_link: "https://wiki.secondlife.com/wiki/Category:LSL_Functions",
-    code_sample: "ll.Foo(...)",
+  const docs: { [k: string]: doc } = {
+    "@roblox/global/ll": {
+      documentation:
+        "The global LL object that stored all the ll specific functions",
+      learn_more_link:
+        "https://wiki.secondlife.com/wiki/Category:LSL_Functions",
+      code_sample: "ll.Foo(...)",
+    },
+    "@roblox/global/integer": {
+      documentation:
+        "function that returns an LL integer type for a given number",
+      learn_more_link:
+        "https://wiki.secondlife.com/wiki/SLua_Alpha#Transitioning_from_LSL_to_SLua",
+      code_sample: "integer(123)",
+    },
+    "@roblox/global/quaternion": {
+      documentation: "function to create an LL quaternion value from 4 numbers",
+      learn_more_link:
+        "https://wiki.secondlife.com/wiki/SLua_Alpha#Transitioning_from_LSL_to_SLua",
+      code_sample: "quaternion(0,0,0,1)",
+    },
+    "@roblox/global/uuid": {
+      documentation: "function to create an LL UUID value from a string",
+      learn_more_link:
+        "https://wiki.secondlife.com/wiki/SLua_Alpha#Transitioning_from_LSL_to_SLua",
+      code_sample: "uuid('677bf9a4-bba5-4cf9-a4ad-4802a0f7ef46')",
+    },
   };
 
   for (const func of (map.get("functions") as Map).content) {
@@ -118,8 +139,8 @@ function outputPreDef() {
   console.log("----------------------------------");
   console.log("");
 
-  console.log("type integer = number");
-  console.log("type key = string");
+  console.log("type Integer = number");
+  console.log("type UUID = string");
 
   console.log("");
 
@@ -134,6 +155,12 @@ function outputPreDef() {
 
   console.log(
     "declare function quaternion (x:number, y:number, z:number, w:number) : Quaternion",
+  );
+  console.log(
+    "declare function integer (i:number) : Integer",
+  );
+  console.log(
+    "declare function uuid (str:string) : UUID",
   );
 
   console.log("");
@@ -225,7 +252,8 @@ function outputFunctionDefs(funcs: Map) {
 
 function remapLSLType(type: string | null | undefined) {
   switch (type) {
-    //    case "integer":
+    case "integer":
+      return "Integer";
     case "float":
       return "number";
     case "void":
@@ -236,6 +264,8 @@ function remapLSLType(type: string | null | undefined) {
       return "Quaternion";
     case "null":
       return "nil";
+    case "key":
+      return "UUID";
     default:
       return type;
   }

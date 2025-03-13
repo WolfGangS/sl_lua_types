@@ -9,8 +9,8 @@ type SelenePropDef = {
 };
 
 type SeleneFuncDef = {
-  args?: SeleneArgDef[];
-  must_use?: boolean;
+  args: SeleneArgDef[];
+  must_use: boolean;
 };
 
 type SeleneArgDef = {
@@ -52,6 +52,18 @@ export function buildDefs(map: Map) {
           { required: true, type: "number", observes: "read" },
           { required: true, type: "number", observes: "read" },
           { required: true, type: "number", observes: "read" },
+        ],
+        must_use: true,
+      },
+      integer: {
+        args: [
+          { required: true, type: "number", observes: "read" },
+        ],
+        must_use: true,
+      },
+      uuid: {
+        args: [
+          { required: true, type: "string", observes: "read" },
         ],
         must_use: true,
       },
