@@ -16,6 +16,13 @@ export function buildDefs(map: Map) {
 
 export function buildDocs(map: Map) {
   const docs: { [k: string]: doc } = {};
+  docs["@roblox/global/ll"] = {
+    documentation:
+      "The global LL object that stored all the ll specific functions",
+    learn_more_link: "https://wiki.secondlife.com/wiki/Category:LSL_Functions",
+    code_sample: "ll.Foo(...)",
+  };
+
   for (const func of (map.get("functions") as Map).content) {
     const [name, map] = func;
     if (!isMap(map)) continue;
