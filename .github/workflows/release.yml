@@ -23,12 +23,16 @@ jobs:
       - name: Node CI
         run: npm ci
       - name: Download
+        if: github.event_name != 'push'
         env:
           BOT_FIRST_NAME: ${{ secrets.BOT_FIRST_NAME }}
           BOT_LAST_NAME: ${{ secrets.BOT_LAST_NAME }}
           BOT_PASSWORD: ${{ secrets.BOT_PASSWORD }}
           BOT_LOCATION: ${{ secrets.BOT_LOCATION }}
         run: npx tsc download/keywords.ts && node download/keywords.js "$BOT_FIRST_NAME" "$BOT_LAST_NAME" "$BOT_PASSWORD" "$BOT_LOCATION"
+      - name: Not Download
+        if: github.event_name == 'push'
+        run: cp data/keywords_lsl_formatted.llsd.xml data/keywords_lsl_download.llsd.xml
       - name: Build
         run: deno task build-dl
       - uses: actions/upload-artifact@v4
@@ -39,6 +43,8 @@ jobs:
         with:
           name: keywords
           path: data/keywords_lsl_download.llsd.xml
+      - name: Hash
+        run: sha1sum out/* | sha1sum
       - uses: montudor/action-zip@v1
         if: startsWith(github.ref, 'refs/tags/v')
         with:

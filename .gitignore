@@ -2,3 +2,4 @@
 Makefile
 node_modules/
 *.js
+data/
