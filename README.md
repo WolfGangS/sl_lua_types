@@ -40,7 +40,27 @@ Created with plenty of help and original findings from
 
 ### Setup Selene
 
-1. add the the `llsel.yml` to selene
-2. I'll finish this list later
-3. ...
-4. profit
+1. Install
+   [this](https://marketplace.visualstudio.com/items?itemName=Kampfkarren.selene-vscode)
+   extension to vscode ([github link](https://github.com/Kampfkarren/selene))
+2. Add the the `sl_selene_defs.yml` to your project (Suggest :
+   `./types/sl_selene_defs.yml`)
+3. Create a `selene.toml` in the root of your project with the following content
+   ```TOML
+   std = "types/sl_selene_defs"
+
+   [rules]
+   global_usage = "allow"
+   shadowing = "allow"
+
+   [config]
+   empty_if = { comments_count = true }
+   unused_variable = { ignore_pattern = "^_|^touch_start$|^touch_end$|^touch$" }
+   ```
+4. Selene should pick this up and start giving you linting hints.
+
+### Recommendations
+
+- [this](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens)
+  Extension for inline errors
+  ([github link](https://github.com/usernamehw/vscode-error-lens))
