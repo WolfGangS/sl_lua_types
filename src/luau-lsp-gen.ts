@@ -7,6 +7,8 @@ type doc = {
   returns?: string;
 };
 
+const prefix = "@roblox";
+
 export function buildDefs(map: Map) {
   outputPreDef();
   outputConstDefs(map.get("constants") as Map);
@@ -16,27 +18,27 @@ export function buildDefs(map: Map) {
 
 export function buildDocs(map: Map) {
   const docs: { [k: string]: doc } = {
-    "@roblox/global/ll": {
+    [`${prefix}/global/ll`]: {
       documentation:
         "The global LL object that stored all the ll specific functions",
       learn_more_link:
         "https://wiki.secondlife.com/wiki/Category:LSL_Functions",
       code_sample: "ll.Foo(...)",
     },
-    "@roblox/global/integer": {
+    [`${prefix}/global/integer`]: {
       documentation:
         "function that returns an LL integer type for a given number",
       learn_more_link:
         "https://wiki.secondlife.com/wiki/SLua_Alpha#Transitioning_from_LSL_to_SLua",
       code_sample: "integer(123)",
     },
-    "@roblox/global/quaternion": {
+    [`${prefix}/global/quaternion`]: {
       documentation: "function to create an LL quaternion value from 4 numbers",
       learn_more_link:
         "https://wiki.secondlife.com/wiki/SLua_Alpha#Transitioning_from_LSL_to_SLua",
       code_sample: "quaternion(0,0,0,1)",
     },
-    "@roblox/global/uuid": {
+    [`${prefix}/global/uuid`]: {
       documentation: "function to create an LL UUID value from a string",
       learn_more_link:
         "https://wiki.secondlife.com/wiki/SLua_Alpha#Transitioning_from_LSL_to_SLua",
@@ -47,7 +49,7 @@ export function buildDocs(map: Map) {
   for (const func of (map.get("functions") as Map).content) {
     const [name, map] = func;
     if (!isMap(map)) continue;
-    docs["@roblox/global/ll." + name.substring(2)] = {
+    docs[`${prefix}/global/ll.${name.substring(2)}`] = {
       documentation: map.get("tooltip")?.text ?? "n./a",
       learn_more_link: `https://wiki.secondlife.com/wiki/${
         name.substring(0, 1).toUpperCase()
@@ -59,7 +61,7 @@ export function buildDocs(map: Map) {
     const [name, map] = func;
     if (!isMap(map)) continue;
     if (name == "default") continue;
-    docs["@roblox/global/" + name] = {
+    docs[`${prefix}/global/${name}`] = {
       documentation: (map.get("value")?.text ?? "") + " : " +
         (map.get("tooltip")?.text ?? "n./a"),
       learn_more_link: `https://wiki.secondlife.com/wiki/${name}`,
@@ -71,7 +73,7 @@ export function buildDocs(map: Map) {
     const [name, map] = func;
     if (!isMap(map)) continue;
     if (name == "default") continue;
-    docs["@roblox/global/" + name] = {
+    docs[`${prefix}/global/${name}`] = {
       documentation: map.get("tooltip")?.text ?? "n./a",
       learn_more_link: `https://wiki.secondlife.com/wiki/${
         name.substring(0, 1).toUpperCase()
