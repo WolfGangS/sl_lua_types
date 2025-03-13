@@ -2,8 +2,9 @@
   "tasks": {
     "build": "deno task build-defs && deno task build-docs && deno task build-sele",
     "build-defs": "deno -R src/main.ts data/keywords_lsl_formatted.llsd.xml defs > out/ll.d.luau",
-    "build-sele": "deno -R src/main.ts data/keywords_lsl_formatted.llsd.xml sele > out/llsel.yml",
+    "build-sele": "deno -R src/main.ts data/keywords_lsl_formatted.llsd.xml sele > out/sl_selene_defs.yml",
     "build-docs": "deno -R src/main.ts data/keywords_lsl_formatted.llsd.xml docs > out/ll.d.json",
+    "generate-sideeffects": "deno -R src/main.ts data/keywords_lsl_formatted.llsd.xml side",
     "install": "deno task build && mkdir -p $HOME/.sl-luau && cp ./out/* $HOME/.sl-luau/.",
     "node-install": "npm ci",
     "fetch": "npx tsc download/keywords.ts && node download/keywords.js",

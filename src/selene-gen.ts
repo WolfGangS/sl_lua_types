@@ -1,5 +1,6 @@
 import { isMap, Map, Node } from "./common.ts";
 import { stringify } from "jsr:@std/yaml";
+import FunctionData from "../data/functionData.json" with { type: "json" };
 
 type SeleneDef = SelenePropDef | SeleneFuncDef;
 
@@ -45,6 +46,15 @@ export function buildDefs(map: Map) {
       ll: {
         property: "read-only",
       },
+      quaternion: {
+        args: [
+          { required: true, type: "number", observes: "read" },
+          { required: true, type: "number", observes: "read" },
+          { required: true, type: "number", observes: "read" },
+          { required: true, type: "number", observes: "read" },
+        ],
+        must_use: true,
+      },
     },
   };
 
@@ -76,8 +86,13 @@ function outputFunctionDefs(funcs: Map, globals: SeleneGlobals) {
   }
 }
 
-function mustUseFunc(_name: string, result: string): boolean {
-  return result != "void";
+function mustUseFunc(name: string, result: string): boolean {
+  if (result == "void") return false;
+  const data: { sideEffect: boolean } | null = FunctionData[name] ?? null;
+  if (data) {
+    return !data.sideEffect;
+  }
+  return false;
 }
 
 function buildFuncArgs(argArray: Node | null): SeleneArgDef[] {
@@ -124,4 +139,106 @@ function remapLSLArgType(type: string | null | undefined): SeleneArgDefType {
     }
   }
   return "nil";
+}
+
+export function listSideEffects(map: Map) {
+  const functionData: { [k: string]: { sideEffect: boolean } } = {};
+
+  for (const func of (map.get("functions") as Map).content) {
+    const [name, map] = func;
+    if (!isMap(map)) continue;
+    functionData[name] = {
+      sideEffect: hasSideEffect(name),
+    };
+  }
+
+  console.log(JSON.stringify(functionData, null, 2));
+}
+
+function hasSideEffect(name: string): boolean {
+  const knownSideEffects = [
+    "llForceMouselook",
+    "llGetNextEmail",
+    "llGroundRepel",
+    "llDeleteCharacter",
+    "llHttpResponse",
+    "llMinEventDelay",
+    "llModifLand",
+    "llNavigateTo",
+    "llOffsetTexture",
+    "llParcelMediaCommandList",
+    "llPursue",
+    "llPushObject",
+    "llWhisper",
+    "llShout",
+    "llScaleByFactor",
+    "llScaleTexture",
+    "llScriptProfiler",
+    "llSitOnLink",
+    "llSleep",
+    "llStartAnimation",
+    "llStartObjectAnimation",
+    "llDialog",
+    "llTextBox",
+    "llUnSit",
+    "llVolumeDetect",
+    "llWanderWithin",
+  ];
+
+  const knonwPure: string[] = [
+    "llAvatarOnLinkSitTarget",
+    "llAvatarOnSitTarget",
+    "llGetExperienceErrorMessage",
+    "llGetEnvironment",
+  ];
+
+  const sideEfectKeyWords = [
+    "Set",
+    "Say",
+    "Request",
+    "Write",
+    "Reset",
+    "Particle",
+    "Add",
+    "Adjust",
+    "Apply",
+    "AttachTo",
+    "Clear",
+    "Sound",
+    "Notecard",
+    "Give",
+    "KeyValue",
+    "LinksetDataDelete",
+    "LinksetDataWrite",
+    "Target",
+    "Listen",
+    "Load",
+    "Manage",
+    "Map",
+    "Message",
+    "Pass",
+    "Release",
+    "Remove",
+    "Return",
+    "Environment",
+    "RezObject",
+    "RezAt",
+    "Rotate",
+    "LookAt",
+    "Sensor",
+    "Stop",
+    "Controls",
+    "Teleport",
+    "Transfer",
+    "Trigger",
+    "Update",
+  ];
+
+  if (knonwPure.includes(name)) return false;
+  for (const key of sideEfectKeyWords) {
+    if (name.indexOf(key) > 0) return true;
+  }
+  if (knownSideEffects.includes(name)) return true;
+
+  return false;
 }

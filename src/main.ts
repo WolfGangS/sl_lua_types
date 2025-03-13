@@ -1,7 +1,7 @@
 import { SAXParser } from "https://jsr.io/@maxim-mazurok/sax-ts/1.2.13/src/sax.ts";
 import { isMap, Map, Node, node } from "./common.ts";
 import { buildDefs, buildDocs } from "./luau-lsp-gen.ts";
-import { buildDefs as buildSelene } from "./selene-gen.ts";
+import { buildDefs as buildSelene, listSideEffects } from "./selene-gen.ts";
 
 const strict: boolean = true; // change to false for HTML parsing
 const parser = new SAXParser(strict, {});
@@ -73,6 +73,9 @@ if (LLSD) {
       case "selene":
       case "sele":
         buildSelene(map);
+        break;
+      case "side":
+        listSideEffects(map);
         break;
     }
   }
