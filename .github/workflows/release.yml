@@ -18,14 +18,14 @@ jobs:
         with:
           deno-version: v2.x
       - uses: actions/setup-node@v4
-        if: github.event_name != 'push'
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         with:
           node-version: "22.x"
       - name: Node CI
-        if: github.event_name != 'push'
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         run: npm ci
       - name: Download
-        if: github.event_name != 'push'
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         env:
           BOT_FIRST_NAME: ${{ secrets.BOT_FIRST_NAME }}
           BOT_LAST_NAME: ${{ secrets.BOT_LAST_NAME }}
@@ -33,7 +33,7 @@ jobs:
           BOT_LOCATION: ${{ secrets.BOT_LOCATION }}
         run: npx tsc download/keywords.ts && node download/keywords.js "$BOT_FIRST_NAME" "$BOT_LAST_NAME" "$BOT_PASSWORD" "$BOT_LOCATION"
       - name: Not Download
-        if: github.event_name == 'push'
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         run: cp data/keywords_lsl_formatted.llsd.xml data/keywords_lsl_download.llsd.xml
       - name: Build
         run: deno task build-dl
@@ -42,18 +42,18 @@ jobs:
           name: outputs
           path: out/
       - uses: actions/upload-artifact@v4
-        if: github.event_name != 'push'
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         with:
           name: keywords
           path: data/keywords_lsl_download.llsd.xml
       - name: Hash
         run: sha1sum out/* | sha1sum | cut -d " " -f 1
       - uses: montudor/action-zip@v1
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         with:
           args: zip -qq -r sl_lua_types.zip out
       - name: Create Release
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         id: create_release
         uses: ncipollo/release-action@v1
         with:
