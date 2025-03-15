@@ -7,7 +7,11 @@ type doc = {
   returns?: string;
 };
 
-const prefix = "@roblox";
+const quaternion = "quaternion";
+const uuid = "uuid";
+const integer = "integer";
+
+const prefix = "@secondlife";
 
 export function buildDefs(map: Map) {
   outputPreDef();
@@ -141,12 +145,38 @@ function outputPreDef() {
   console.log("----------------------------------");
   console.log("");
 
-  console.log("type Integer = number");
-  console.log("type UUID = string");
+  console.log(`-- type ${integer} = number`);
+  console.log("-- type UUID = string");
 
   console.log("");
 
-  console.log("declare class Quaternion");
+  console.log(`declare class ${integer}`);
+  console.log(`  function __add(self, other: ${integer}): ${integer}`);
+  console.log(`  function __add(self, other: number): number`);
+  console.log(`  function __sub(self, other: ${integer}): ${integer}`);
+  console.log(`  function __sub(self, other: number): number`);
+  console.log(`  function __mul(self, other: ${integer}): ${integer}`);
+  console.log(`  function __mul(self, other: number): number`);
+  console.log(`  function __div(self, other: ${integer}): ${integer}`);
+  console.log(`  function __div(self, other: number): number`);
+  console.log(`  function __unm(self): ${integer}`);
+  console.log(`  function __mod(self, outher: ${integer}): ${integer}`);
+  console.log(`  function __mod(self, outher: number): number`);
+  console.log(`  function __pow(self, outher: ${integer}): number`);
+  console.log(`  function __pow(self, outher: number): number`);
+  console.log(`  function __idiv(self, outher: ${integer}): ${integer}`);
+  console.log(`  function __idiv(self, outher: number): number`);
+  console.log("end");
+
+  console.log("");
+
+  console.log(`declare class ${uuid}`);
+  console.log("  function __tostring(self): string");
+  console.log("end");
+
+  console.log("");
+
+  console.log(`declare class ${quaternion}`);
   console.log("  x: number");
   console.log("  y: number");
   console.log("  z: number");
@@ -156,13 +186,13 @@ function outputPreDef() {
   console.log("");
 
   console.log(
-    "declare function quaternion (x:number, y:number, z:number, w:number) : Quaternion",
+    `declare function quaternion (x:number, y:number, z:number, w:number) : ${quaternion}`,
   );
   console.log(
-    "declare function integer (i:number) : Integer",
+    `declare function integer (i:number) : ${integer}`,
   );
   console.log(
-    "declare function uuid (str:string) : UUID",
+    `declare function uuid (str:string) : ${uuid}`,
   );
 
   console.log("");
@@ -222,7 +252,7 @@ function mapArgsArrayToTypes(argArray: Node | null) {
       for (const arg of argMap.content) {
         const [name, map] = arg;
         if (!isMap(map)) continue;
-        args.push(name + ": " + remapLSLType(map.get("type")?.text));
+        args.push(name + ": " + remapLSLArgType(map.get("type")?.text));
       }
     }
   }
@@ -252,10 +282,22 @@ function outputFunctionDefs(funcs: Map) {
   console.log("}");
 }
 
+function remapLSLArgType(type: string | null | undefined) {
+  type = remapLSLType(type);
+  switch (type) {
+    case integer:
+      return `${integer}|number`;
+    case uuid:
+      return `${uuid}|string`;
+    default:
+      return type;
+  }
+}
+
 function remapLSLType(type: string | null | undefined) {
   switch (type) {
     case "integer":
-      return "Integer";
+      return integer;
     case "float":
       return "number";
     case "void":
@@ -263,11 +305,11 @@ function remapLSLType(type: string | null | undefined) {
     case "list":
       return "{}";
     case "rotation":
-      return "Quaternion";
+      return quaternion;
     case "null":
       return "nil";
     case "key":
-      return "UUID";
+      return uuid;
     default:
       return type;
   }
