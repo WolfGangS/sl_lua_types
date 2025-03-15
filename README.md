@@ -11,7 +11,7 @@ Created with plenty of help and original findings from
 
 ## VSCode installaion
 
-### Setup luau-lsp (Inline type checks, function and constant completion, some linting)
+### Setup luau-lsp (Inline type checks, code completion, some linting)
 
 1. Install vscode
 2. Install
