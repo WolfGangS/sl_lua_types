@@ -150,38 +150,69 @@ function outputPreDef() {
 
   console.log("");
 
-  console.log(`declare class ${integer}`);
-  console.log(`  function __add(self, other: ${integer}): ${integer}`);
-  console.log(`  function __add(self, other: number): number`);
-  console.log(`  function __sub(self, other: ${integer}): ${integer}`);
-  console.log(`  function __sub(self, other: number): number`);
-  console.log(`  function __mul(self, other: ${integer}): ${integer}`);
-  console.log(`  function __mul(self, other: number): number`);
-  console.log(`  function __div(self, other: ${integer}): ${integer}`);
-  console.log(`  function __div(self, other: number): number`);
-  console.log(`  function __unm(self): ${integer}`);
-  console.log(`  function __mod(self, outher: ${integer}): ${integer}`);
-  console.log(`  function __mod(self, outher: number): number`);
-  console.log(`  function __pow(self, outher: ${integer}): number`);
-  console.log(`  function __pow(self, outher: number): number`);
-  console.log(`  function __idiv(self, outher: ${integer}): ${integer}`);
-  console.log(`  function __idiv(self, outher: number): number`);
-  console.log("end");
+  console.log(
+    `declare class ${integer}
+  function __add(self, other: ${integer}): ${integer}
+  function __add(self, other: number): number
+  function __sub(self, other: ${integer}): ${integer}
+  function __sub(self, other: number): number
+  function __mul(self, other: ${integer}): ${integer}
+  function __mul(self, other: number): number
+  function __div(self, other: ${integer}): ${integer}
+  function __div(self, other: number): number
+  function __unm(self): ${integer}
+  function __mod(self, outher: ${integer}): ${integer}
+  function __mod(self, outher: number): number
+  function __pow(self, outher: ${integer}): number
+  function __pow(self, outher: number): number
+  function __idiv(self, outher: ${integer}): ${integer}
+  function __idiv(self, outher: number): number
+  function __eq(self, other: ${integer}): boolean
+  function __lt(self, other: ${integer}): boolean
+  function __le(self, other: ${integer}): boolean
+end`,
+  );
 
   console.log("");
 
-  console.log(`declare class ${uuid}`);
-  console.log("  function __tostring(self): string");
-  console.log("end");
+  console.log(
+    `declare class ${uuid}
+  function __tostring(self): string
+end`,
+  );
 
   console.log("");
 
-  console.log(`declare class ${quaternion}`);
-  console.log("  x: number");
-  console.log("  y: number");
-  console.log("  z: number");
-  console.log("  w: number");
-  console.log("end");
+  console.log(
+    `declare bit32: {
+  arshift: ((n:integer, i:integer) -> integer) & ((n: integer | number, i: integer | number) -> number),
+  band: ((...integer) -> integer) & ((...(integer | number)) -> number),
+  bnot: ((n:integer) -> integer) & ((n: integer | number) -> number),
+  bor: ((...integer) -> integer) & ((...(integer | number)) -> number),
+  bxor: ((...integer) -> integer) & ((...(integer | number)) -> number),
+  btest: (...(integer | number)) -> boolean,
+  extract: ((n: integer, f: integer, w: integer)->integer) & ((n: integer | number, f: integer | number, w: integer | number) -> number),
+  lrotate: ((n: integer, i: integer) -> integer) & ((n: integer | number, i: integer | number) -> number),
+  lshift: ((n: integer, i: integer) -> integer) & ((n: integer | number, i: integer | number) -> number),
+  replace: ((n: integer, r: integer, f: integer, w: integer?) -> integer) & ((n: integer | number, r: integer | number, f: integer | number, w: (integer|number)?) -> number),
+  rrotate: ((n: integer, i: integer) -> integer) & ((n: integer | number, i: integer | number) -> number),
+  rshift: ((n: integer, i: integer) -> integer) & ((n: integer | number, i: integer | number) -> number),
+  countlz: ((n: integer) -> integer) & ((n: number) -> integer),
+  countrz: ((n: integer) -> integer) & ((n: number) -> integer),
+  byteswap: ((n: integer) -> integer) & ((n: number) -> integer),
+}`,
+  );
+
+  console.log("");
+
+  console.log(
+    `declare class ${quaternion}
+  x: number
+  y: number
+  z: number
+  w: number
+end`,
+  );
 
   console.log("");
 
@@ -275,11 +306,21 @@ function outputFunctionDefs(funcs: Map) {
       ":",
       "(" + mapArgsArrayToTypes(map.get("arguments")).join(", ") + ")",
       "->",
-      remapLSLType(map.get("return")?.text ?? "void"),
+      remapLSLReturnType(map.get("return")?.text ?? "void"),
       ",",
     );
   }
   console.log("}");
+}
+
+function remapLSLReturnType(type: string | null | undefined) {
+  type = remapLSLType(type);
+  switch (type) {
+    case integer:
+      return `number`;
+    default:
+      return type;
+  }
 }
 
 function remapLSLArgType(type: string | null | undefined) {
