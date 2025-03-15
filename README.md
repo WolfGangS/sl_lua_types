@@ -11,7 +11,7 @@ Created with plenty of help and original findings from
 
 ## VSCode installaion
 
-### Setup luau-lsp
+### Setup luau-lsp (Inline type checks, function and constant completion, some linting)
 
 1. Install vscode
 2. Install
@@ -38,7 +38,7 @@ Created with plenty of help and original findings from
 
 6. You may need to restart vscode or reload the ui
 
-### Setup Selene
+### Setup Selene (linting)
 
 1. Install
    [this](https://marketplace.visualstudio.com/items?itemName=Kampfkarren.selene-vscode)
