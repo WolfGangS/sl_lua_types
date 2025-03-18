@@ -58,4 +58,4 @@ jobs:
         id: create_release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: sl_lua_types.zip
+          artifacts: sl_lua_types.zip, out/keywords.json

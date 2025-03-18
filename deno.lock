@@ -6,6 +6,7 @@
     "jsr:@std/bytes@^1.0.5": "1.0.5",
     "jsr:@std/encoding@*": "1.0.7",
     "jsr:@std/encoding@1": "1.0.7",
+    "jsr:@std/html@*": "1.0.3",
     "jsr:@std/streams@*": "1.0.9",
     "jsr:@std/yaml@*": "1.0.5",
     "jsr:@takker/md5@*": "0.1.0"
@@ -22,6 +23,9 @@
     },
     "@std/encoding@1.0.7": {
       "integrity": "f631247c1698fef289f2de9e2a33d571e46133b38d042905e3eac3715030a82d"
+    },
+    "@std/html@1.0.3": {
+      "integrity": "7a0ac35e050431fb49d44e61c8b8aac1ebd55937e0dc9ec6409aa4bab39a7988"
     },
     "@std/streams@1.0.9": {
       "integrity": "a9d26b1988cdd7aa7b1f4b51e1c36c1557f3f252880fa6cc5b9f37078b1a5035",

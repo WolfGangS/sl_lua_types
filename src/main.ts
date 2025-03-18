@@ -3,6 +3,7 @@ import { isMap, Map, Node, node } from "./common.ts";
 import { buildDefs, buildDocs } from "./luau-lsp-gen.ts";
 import { buildDefs as buildSelene, listSideEffects } from "./selene-gen.ts";
 import { buildJson } from "./json-gen.ts";
+import { unescape } from "jsr:@std/html/entities";
 
 const strict: boolean = true; // change to false for HTML parsing
 const parser = new SAXParser(strict, {});
@@ -34,6 +35,7 @@ function cleanText(text: string) {
     text = text.replaceAll("  ", " ");
   }
   text = text.replaceAll(nltoke, "\n");
+  text = unescape(text);
   return text;
 }
 

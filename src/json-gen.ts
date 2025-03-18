@@ -8,6 +8,7 @@ type LSLDef = {
   functions: FuncDefs;
   constants: ConstDefs;
   events: EventDefs;
+  types: TypeDefs;
 };
 
 export function buildJson(map: Map) {
@@ -15,6 +16,7 @@ export function buildJson(map: Map) {
     functions: generateFunctions(map.get("functions") as Map),
     constants: generateConstants(map.get("constants") as Map),
     events: generateEvents(map.get("events") as Map),
+    types: generateTypes(map.get("types") as Map),
   };
   console.log(JSON.stringify(json, null, 2));
 }
@@ -139,5 +141,25 @@ function generateEvents(events: Map): EventDefs {
     };
   }
 
+  return out;
+}
+
+type TypeDefs = StrObj<TypeDef>;
+type TypeDef = {
+  name: string;
+  desc: string;
+};
+
+function generateTypes(types: Map): TypeDefs {
+  const out: TypeDefs = {};
+  for (const entry of types.content) {
+    const [name, map] = entry;
+    if (!isMap(map)) continue;
+
+    out[name] = {
+      name,
+      desc: map.get("tooltip")?.text ?? "",
+    };
+  }
   return out;
 }
