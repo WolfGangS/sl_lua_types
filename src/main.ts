@@ -2,6 +2,7 @@ import { SAXParser } from "https://jsr.io/@maxim-mazurok/sax-ts/1.2.13/src/sax.t
 import { isMap, Map, Node, node } from "./common.ts";
 import { buildDefs, buildDocs } from "./luau-lsp-gen.ts";
 import { buildDefs as buildSelene, listSideEffects } from "./selene-gen.ts";
+import { buildJson } from "./json-gen.ts";
 
 const strict: boolean = true; // change to false for HTML parsing
 const parser = new SAXParser(strict, {});
@@ -18,8 +19,23 @@ const lastNode = (): Node | null => {
 
 parser.ontext = function (text: string) {
   const n = lastNode();
-  if (n) n.text = text;
+  if (n) n.text = cleanText(text);
 };
+
+function cleanText(text: string) {
+  const nltoke = "%%%%%%";
+  text = text.replaceAll("\\n", nltoke);
+  text = text.replaceAll("\n", "");
+  text = text.replaceAll("  ", " ");
+  let len = text.length;
+  text = text.replaceAll("  ", " ");
+  while (text.length != len) {
+    len = text.length;
+    text = text.replaceAll("  ", " ");
+  }
+  text = text.replaceAll(nltoke, "\n");
+  return text;
+}
 
 parser.onopentag = function (node: node) {
   const parent = lastNode();
@@ -39,6 +55,7 @@ parser.onclosetag = function () {
   }
 };
 
+/*
 const inMap = (): boolean => {
   return isMap(lastNode());
 };
@@ -51,6 +68,7 @@ const getMap = (): Map | null => {
   }
   return null;
 };
+*/
 
 const file = await Deno.readTextFile(Deno.args[0]);
 
@@ -76,6 +94,9 @@ if (LLSD) {
         break;
       case "side":
         listSideEffects(map);
+        break;
+      case "json":
+        buildJson(map);
         break;
     }
   }
