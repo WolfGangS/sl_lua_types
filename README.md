@@ -13,6 +13,8 @@ Created with plenty of help and original findings from
 
 ### Setup luau-lsp (Inline type checks, code completion, some linting)
 
+Work is happening to add support for setting urls for definitions in the vscode extension, to allow automatic updating of the definitions. For now you will need to update them manually. When they change
+
 1. Install vscode
 2. Install
    [this](https://marketplace.visualstudio.com/items?itemName=JohnnyMorganz.luau-lsp)
