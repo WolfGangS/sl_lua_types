@@ -147,6 +147,9 @@ function outputPreDef() {
 
   console.log(`-- type ${integer} = number`);
   console.log("-- type UUID = string");
+  console.log(
+    `type list = {string|number|${integer}|vector|${uuid}|${quaternion}|boolean}`,
+  );
 
   console.log("");
 
@@ -231,6 +234,10 @@ end`,
   console.log(
     "--declare function vector(x:number,y:number,z:number) : vector",
   );
+
+  console.log("");
+  console.log("declare function tovector(v:string) : vector");
+  console.log(`declare function toquaternion(v:string) : ${quaternion}`);
 }
 
 function outputConstDefs(consts: Map) {
@@ -261,6 +268,7 @@ function outputEventDefs(events: Map) {
   for (const entry of events.content) {
     const [name, map] = entry;
     if (!isMap(map)) continue;
+    if (name.startsWith("state_")) continue;
     console.log(
       "declare function",
       name,

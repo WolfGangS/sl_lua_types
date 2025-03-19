@@ -40,19 +40,25 @@ jobs:
         run: deno task build
       - uses: actions/upload-artifact@v4
         with:
-          name: outputs
-          path: out/
+          name: dist
+          path: dist/
       - uses: actions/upload-artifact@v4
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         with:
           name: keywords
           path: data/keywords_lsl_download.llsd.xml
       - name: Hash
-        run: sha1sum out/* | sha1sum | cut -d " " -f 1
+        run: sha1sum dist/* | sha1sum | cut -d " " -f 1
+      - name: Converts Markdown to HTML
+        uses: jaywcjlove/markdown-to-html-cli@main
+        with:
+          source: README.md
+          output: dist/index.html
+          github-corners: https://github.com/WolfGangS/sl_lua_types
       - uses: montudor/action-zip@v1
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         with:
-          args: zip -qq -r sl_lua_types.zip out
+          args: zip -qq -r sl_lua_types.zip dist
       - name: Create Release
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         id: create_release
