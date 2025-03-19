@@ -11,7 +11,7 @@ const quaternion = "quaternion";
 const uuid = "uuid";
 const integer = "integer";
 
-const prefix = "@secondlife";
+const prefix = "@roblox";
 
 export function buildDefs(map: Map) {
   outputPreDef();
@@ -148,7 +148,7 @@ function outputPreDef() {
   console.log(`-- type ${integer} = number`);
   console.log("-- type UUID = string");
   console.log(
-    `type list = {string|number|${integer}|vector|${uuid}|${quaternion}|boolean}`,
+    `type list = {[number]:(string|number|${integer}|vector|${uuid}|${quaternion}|boolean)}`,
   );
 
   console.log("");
@@ -352,7 +352,7 @@ function remapLSLType(type: string | null | undefined) {
     case "void":
       return "()";
     case "list":
-      return "{}";
+      return "list";
     case "rotation":
       return quaternion;
     case "null":
