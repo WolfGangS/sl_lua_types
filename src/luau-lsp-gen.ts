@@ -1,10 +1,15 @@
 import { isMap, Map, Node } from "./common.ts";
 import _KnownTypes from "../data/knownTypes.json" with { type: "json" };
 
-type KnownTypeSet = { [k: string]: string };
+type KnownTypeConstSet = { [k: string]: string | undefined };
+type KnownTypeFuncSet = { [k: string]: KnownTypeFunc | undefined };
+type KnownTypeFunc = {
+  args?: { [k: string]: string | undefined };
+  return?: string;
+};
 const KnownTypes = _KnownTypes as {
-  functions: KnownTypeSet;
-  constants: KnownTypeSet;
+  functions: KnownTypeFuncSet;
+  constants: KnownTypeConstSet;
 };
 
 type doc = {
@@ -20,14 +25,18 @@ const integer = "integer";
 
 const prefix = "@roblox";
 
-export function buildDefs(map: Map) {
+let remapLSLArgType = remapLSLArgTypeStrict;
+
+export function buildDefs(map: Map, strict: boolean = true) {
+  if (!strict) remapLSLArgType = remapLSLArgTypeLoose;
   outputPreDef();
   outputConstDefs(map.get("constants") as Map);
   outputFunctionDefs(map.get("functions") as Map);
   outputEventDefs(map.get("events") as Map);
 }
 
-export function buildDocs(map: Map) {
+export function buildDocs(map: Map, strict: boolean = true) {
+  if (!strict) remapLSLArgType = remapLSLArgTypeLoose;
   const docs: { [k: string]: doc } = {
     [`${prefix}/global/ll`]: {
       documentation:
@@ -157,6 +166,7 @@ function outputPreDef() {
   console.log(
     `type list = {[number]:(string|number|${integer}|vector|${uuid}|${quaternion}|boolean)}`,
   );
+  console.log("type numeric = number|boolean|integer");
 
   console.log("");
 
@@ -282,14 +292,14 @@ function outputEventDefs(events: Map) {
     console.log(
       "declare function",
       name,
-      "(" + mapArgsArrayToTypes(map.get("arguments")).join(", ") + ")",
+      "(" + mapArgsArrayToTypes(name, map.get("arguments")).join(", ") + ")",
       ":",
       "()",
     );
   }
 }
 
-function mapArgsArrayToTypes(argArray: Node | null) {
+function mapArgsArrayToTypes(func: string, argArray: Node | null) {
   const args: string[] = [];
   if (argArray && argArray.type == "array") {
     for (const argMap of argArray.children) {
@@ -301,7 +311,9 @@ function mapArgsArrayToTypes(argArray: Node | null) {
       for (const arg of argMap.content) {
         const [name, map] = arg;
         if (!isMap(map)) continue;
-        args.push(name + ": " + remapLSLArgType(map.get("type")?.text));
+        args.push(
+          name + ": " + remapLSLArgType(func, name, map.get("type")?.text),
+        );
       }
     }
   }
@@ -322,16 +334,27 @@ function outputFunctionDefs(funcs: Map) {
       " ",
       name.substring(2),
       ":",
-      "(" + mapArgsArrayToTypes(map.get("arguments")).join(", ") + ")",
+      "(" + mapArgsArrayToTypes(name, map.get("arguments")).join(", ") + ")",
       "->",
-      remapLSLReturnType(map.get("return")?.text ?? "void"),
+      remapLSLReturnType(name, map.get("return")?.text ?? "void"),
       ",",
     );
   }
   console.log("}");
 }
 
-function remapLSLReturnType(type: string | null | undefined) {
+function getKnownFuncReturnType(
+  func: string,
+): string | null {
+  const knownFunc = KnownTypes.functions[func];
+  if (!knownFunc) return null;
+  return knownFunc.return ?? null;
+}
+
+function remapLSLReturnType(func: string, type: string | null | undefined) {
+  type = type ?? null;
+  const known = getKnownFuncReturnType(func);
+  if (known) return known;
   type = remapLSLType(type);
   switch (type) {
     case integer:
@@ -341,7 +364,43 @@ function remapLSLReturnType(type: string | null | undefined) {
   }
 }
 
-function remapLSLArgType(type: string | null | undefined) {
+function getKnownFuncArgumentType(
+  func: string,
+  name: string,
+): string | null {
+  const knownFunc = KnownTypes.functions[func];
+  if (!knownFunc) return null;
+  const knownArgs = knownFunc.args;
+  if (!knownArgs) return null;
+  return knownArgs[name] ?? null;
+}
+
+function remapLSLArgTypeLoose(
+  func: string,
+  argname: string,
+  type: string | null | undefined,
+): string | null {
+  type = remapLSLArgTypeStrict(func, argname, type);
+  switch (type) {
+    case "integer":
+    case "number":
+    case "bool":
+    case "boolean":
+    case "float":
+      return "numeric";
+    default:
+      return type;
+  }
+}
+
+function remapLSLArgTypeStrict(
+  func: string,
+  argname: string,
+  type: string | null | undefined,
+): string | null {
+  type = type ?? null;
+  const known = getKnownFuncArgumentType(func, argname);
+  if (known) return known;
   type = remapLSLType(type);
   switch (type) {
     case integer:
@@ -353,7 +412,7 @@ function remapLSLArgType(type: string | null | undefined) {
   }
 }
 
-function remapLSLType(type: string | null | undefined) {
+function remapLSLType(type: string | null) {
   switch (type) {
     case "integer":
       return integer;

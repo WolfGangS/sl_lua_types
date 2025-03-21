@@ -2,5 +2,13 @@
     "constants": {
         "NULL_KEY": "key"
     },
-    "functions": {}
+    "functions": {
+        "llTakeControls": {
+            "args": {
+                "Controls": "integer|number",
+                "Accept": "boolean",
+                "PassOn": "boolean"
+            }
+        }
+    }
 }
