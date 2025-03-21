@@ -1,4 +1,11 @@
 import { isMap, Map, Node } from "./common.ts";
+import _KnownTypes from "../data/knownTypes.json" with { type: "json" };
+
+type KnownTypeSet = { [k: string]: string };
+const KnownTypes = _KnownTypes as {
+  functions: KnownTypeSet;
+  constants: KnownTypeSet;
+};
 
 type doc = {
   documentation: string;
@@ -181,6 +188,7 @@ end`,
   console.log(
     `declare class ${uuid}
   function __tostring(self): string
+  istruthy: boolean
 end`,
   );
 
@@ -254,7 +262,9 @@ function outputConstDefs(consts: Map) {
       "declare",
       name,
       ":",
-      remapLSLType(map.get("type")?.text ?? null),
+      remapLSLType(
+        KnownTypes.constants[name] ?? (map.get("type")?.text ?? null),
+      ),
     );
   }
 }
