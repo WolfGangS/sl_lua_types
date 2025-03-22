@@ -11,7 +11,7 @@
     "fetch": "npx tsc download/keywords.ts && node download/keywords.js",
     "build-dl": "deno task build-defs-dl && deno task build-docs-dl && deno task build-sele-dl && deno task build-json-dl",
     "build-defs-dl": "deno -R src/main.ts data/keywords_lsl_download.llsd.xml defs > dist/ll.d.luau",
-    "build-sele-dl": "deno -R src/main.ts data/keywords_lsl_download.llsd.xml sele > dist/llsel.yml",
+    "build-sele-dl": "deno -R src/main.ts data/keywords_lsl_download.llsd.xml sele > dist/sl_selene_defs.yml",
     "build-docs-dl": "deno -R src/main.ts data/keywords_lsl_download.llsd.xml docs > dist/ll.d.json",
     "build-json-dl": "deno -R src/main.ts data/keywords_lsl_download.llsd.xml json > dist/keywords.json"
   },
