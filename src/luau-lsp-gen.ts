@@ -231,7 +231,7 @@ end`,
   x: number
   y: number
   z: number
-  w: number
+  s: number
 end`,
   );
 
