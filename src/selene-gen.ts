@@ -40,7 +40,7 @@ type SeleneGlobals = { [k: string]: SeleneDef };
 
 export function buildDefs(map: Map) {
   const selene: Selene = {
-    base: "Luau",
+    base: "luau",
     name: "sl_selene_defs",
     globals: {
       ll: {
