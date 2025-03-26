@@ -103,6 +103,7 @@ export function buildDefs(map: Map) {
       "llbase64.decode": {
         args: [
           { required: true, type: "string", observes: "read" },
+          { required: false, type: "bool", observes: "read" },
         ],
         must_use: true,
       },

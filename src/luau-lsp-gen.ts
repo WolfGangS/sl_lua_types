@@ -276,7 +276,7 @@ end`,
   console.log(
     `declare llbase64: {
 encode: (string|buffer) -> string,
-decode: (string) -> string,
+decode: ((string) -> string) & ((string,true) -> buffer) & ((string,false) -> string),
 }`,
   );
 }
