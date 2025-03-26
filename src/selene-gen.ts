@@ -1,6 +1,18 @@
 import { isMap, Map, Node } from "./common.ts";
 import { stringify } from "jsr:@std/yaml";
 import FunctionData from "../data/functionData.json" with { type: "json" };
+import _KnownTypes from "../data/knownTypes.json" with { type: "json" };
+
+type KnownTypeConstSet = { [k: string]: string | undefined };
+type KnownTypeFuncSet = { [k: string]: KnownTypeFunc | undefined };
+type KnownTypeFunc = {
+  args?: { [k: string]: string | undefined };
+  return?: string;
+};
+const KnownTypes = _KnownTypes as {
+  functions: KnownTypeFuncSet;
+  constants: KnownTypeConstSet;
+};
 
 type SeleneDef = SelenePropDef | SeleneFuncDef;
 
@@ -46,6 +58,54 @@ export function buildDefs(map: Map) {
       ll: {
         property: "read-only",
       },
+      lljson: {
+        property: "read-only",
+      },
+      "lljson._NAME": {
+        property: "read-only",
+      },
+      "lljson._VERSION": {
+        property: "read-only",
+      },
+      "lljson.array_mt": {
+        property: "read-only",
+      },
+      "lljson.empty_array": {
+        property: "read-only",
+      },
+      "lljson.empty_array_mt": {
+        property: "read-only",
+      },
+      "lljson.null": {
+        property: "read-only",
+      },
+      "lljson.encode": {
+        args: [
+          { required: true, type: "any", observes: "read" },
+        ],
+        must_use: true,
+      },
+      "lljson.decode": {
+        args: [
+          { required: true, type: "string", observes: "read" },
+        ],
+        must_use: true,
+      },
+      llbase64: {
+        property: "read-only",
+      },
+      "llbase64.encode": {
+        args: [
+          { required: true, type: "string", observes: "read" },
+        ],
+        must_use: true,
+      },
+      "llbase64.decode": {
+        args: [
+          { required: true, type: "string", observes: "read" },
+        ],
+        must_use: true,
+      },
       quaternion: {
         args: [
           { required: true, type: "number", observes: "read" },
@@ -90,7 +150,7 @@ function outputFunctionDefs(funcs: Map, globals: SeleneGlobals) {
     const [name, map] = entry;
     if (!isMap(map)) continue;
     const result = map.get("return")?.text ?? "void";
-    const args = buildFuncArgs(map.get("arguments"));
+    const args = buildFuncArgs(name, map.get("arguments"));
     globals["ll." + name.substring(2)] = {
       args,
       must_use: mustUseFunc(name, result),
@@ -107,7 +167,7 @@ function mustUseFunc(name: string, result: string): boolean {
   return false;
 }
 
-function buildFuncArgs(argArray: Node | null): SeleneArgDef[] {
+function buildFuncArgs(func: string, argArray: Node | null): SeleneArgDef[] {
   const args: SeleneArgDef[] = [];
 
   if (argArray && argArray.type == "array") {
@@ -118,9 +178,9 @@ function buildFuncArgs(argArray: Node | null): SeleneArgDef[] {
         continue;
       }
       for (const arg of argMap.content) {
-        const [_name, map] = arg;
+        const [name, map] = arg;
         if (!isMap(map)) continue;
-        const type = remapLSLArgType(map.get("type")?.text);
+        const type = remapLSLArgType(func, name, map.get("type")?.text);
         args.push({
           required: true,
           type: type,
@@ -133,7 +193,24 @@ function buildFuncArgs(argArray: Node | null): SeleneArgDef[] {
   return args;
 }
 
-function remapLSLArgType(type: string | null | undefined): SeleneArgDefType {
+function getKnownFuncArgumentType(
+  func: string,
+  name: string,
+): string | null {
+  const knownFunc = KnownTypes.functions[func];
+  if (!knownFunc) return null;
+  const knownArgs = knownFunc.args;
+  if (!knownArgs) return null;
+  return knownArgs[name] ?? null;
+}
+
+function remapLSLArgType(
+  func: string,
+  arg: string,
+  type: string | null | undefined,
+): SeleneArgDefType {
+  const known = getKnownFuncArgumentType(func, arg);
+  if (known) type = known;
   if (type) {
     switch (type) {
       case "integer":
@@ -144,6 +221,9 @@ function remapLSLArgType(type: string | null | undefined): SeleneArgDefType {
       case "key":
       case "string":
         return "string";
+      case "boolean":
+      case "bool":
+        return "bool";
       case "rotation":
         return { display: "Quaternion" };
       default:

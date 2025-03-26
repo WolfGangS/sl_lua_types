@@ -256,6 +256,29 @@ end`,
   console.log("");
   console.log("declare function tovector(v:string) : vector");
   console.log(`declare function toquaternion(v:string) : ${quaternion}`);
+
+  console.log("");
+  console.log("type lljson_constant = number");
+  console.log(
+    `declare lljson: {
+  encode: (string|number|${integer}|vector|${uuid}|${quaternion}|boolean|{}|nil) -> string,
+  decode: (string) -> string|number|${integer}|vector|${uuid}|${quaternion}|boolean|{}|nil,
+  _NAME: "lljson",
+  _VERSION: string,
+  array_mt: {},
+  empty_array: lljson_constant,
+  empty_array_mt: {},
+  null: lljson_constant,
+}`,
+  );
+
+  console.log("");
+  console.log(
+    `declare llbase64: {
+encode: (string|buffer) -> string,
+decode: (string) -> string,
+}`,
+  );
 }
 
 function outputConstDefs(consts: Map) {
