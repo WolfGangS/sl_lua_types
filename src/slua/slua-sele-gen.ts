@@ -1,8 +1,6 @@
 import { stringify } from "jsr:@std/yaml";
 import {
   buildSluaJson,
-  isTypeCustom,
-  isTypeValue,
   SLuaBaseType,
   SLuaConstDef,
   SLuaFuncDef,
@@ -12,7 +10,7 @@ import {
   SLuaGlobalTableProps,
   VarOpType,
 } from "./slua-json-gen.ts";
-import { nil } from "https://jsr.io/@std/yaml/1.0.5/_type/nil.ts";
+import { isTypeCustom, isTypeValue } from "./slua-common.ts";
 
 type SeleneDef = SelenePropDef | SeleneFuncDef;
 
@@ -179,27 +177,6 @@ function buildFuncArgs(signatures: SLuaFuncSig[]): SeleneArgDef[] {
   }
 
   return args;
-  // if (argArray && argArray.type == "array") {
-  //   for (const argMap of argArray.children) {
-  //     if (!isMap(argMap)) continue;
-  //     if (argMap.content.length > 1) {
-  //       console.warn(argMap.toString(), "ARG ARRAY LONG");
-  //       continue;
-  //     }
-  //     for (const arg of argMap.content) {
-  //       const [name, map] = arg;
-  //       if (!isMap(map)) continue;
-  //       const type = remapLSLArgType(func, name, map.get("type")?.text);
-  //       args.push({
-  //         required: true,
-  //         type: type,
-  //         observes: "read",
-  //       });
-  //     }
-  //   }
-  // }
-
-  // return args;
 }
 
 function remapLSLArgType(

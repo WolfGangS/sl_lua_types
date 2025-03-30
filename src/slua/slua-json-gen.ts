@@ -80,7 +80,7 @@ export type VarOpType = {
 export type SLuaFuncArg = Omit<FuncArg, "type"> & VarOpType;
 export type SLuaFuncArgs = SLuaFuncArg[];
 
-type SLuaDef = SLuaFuncDef | SLuaConstDef | SLuaEventDef | SLuaClassDef;
+export type SLuaDef = SLuaFuncDef | SLuaConstDef | SLuaEventDef | SLuaClassDef;
 
 export type SLuaClassDef = {
   def: "class";
@@ -1215,18 +1215,4 @@ function remapLSLType(type: string | null): SLuaBaseType {
       console.trace();
       throw `Unknown Type ${type}`;
   }
-}
-
-export function isTypeCustom(c: unknown): c is { custom: string } {
-  if (typeof c != "object") return false;
-  if (c == null) return false;
-  if (c instanceof Array) return false;
-  return Object.hasOwn(c, "custom");
-}
-
-export function isTypeValue(c: unknown): c is { value: string } {
-  if (typeof c != "object") return false;
-  if (c == null) return false;
-  if (c instanceof Array) return false;
-  return Object.hasOwn(c, "value");
 }

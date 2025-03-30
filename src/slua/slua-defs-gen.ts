@@ -1,14 +1,9 @@
 import {
   buildSluaJson,
-  isTypeCustom,
-  isTypeValue,
-  NamedVarOpType,
-  SLuaBaseType,
   SLuaClassDef,
   SLuaConstDef,
   SLuaEventDef,
   SLuaFuncDef,
-  SLuaFuncResult,
   SLuaGlobal,
   SLuaGlobalTable,
   SLuaGlobalTableProps,
@@ -16,6 +11,11 @@ import {
   SLuaTypeDef,
 } from "./slua-json-gen.ts";
 import { StrObj } from "../types.d.ts";
+import {
+  mapArgToFunctionString,
+  mapResultToFunctionString,
+  mapSLuaTypeToString,
+} from "./slua-common.ts";
 
 export async function buildSluaTypeDefs(
   file: string,
@@ -135,44 +135,4 @@ function outputFunctionDefs(
     output += "\n";
   }
   return output;
-}
-
-function mapResultToFunctionString(results: SLuaFuncResult[]): string {
-  return results.map(mapArgToFunctionString).join(", ");
-}
-
-function mapSLuaTypeToString(t: SLuaBaseType): string {
-  if (typeof t == "string") return t;
-  if (isTypeCustom(t)) {
-    return t.custom;
-  } else if (isTypeValue(t)) {
-    return t.value;
-  } else {
-    console.error(t);
-    throw new Error("Unknown type handle");
-  }
-}
-
-function mapArgToFunctionString(arg: NamedVarOpType): string {
-  const types = arg.type.map(mapSLuaTypeToString);
-
-  let str = types.filter((t) => t != "self").join("|");
-
-  if (arg.variadic || arg.optional) {
-    if (arg.type.length > 1) {
-      str = `(${str})`;
-    }
-    if (arg.variadic) str = `...${str}`;
-    if (arg.optional) str = `${str}?`;
-  }
-
-  if (arg.name && !arg.variadic) {
-    if (str) {
-      str = `${arg.name}: ${str}`;
-    } else {
-      str = arg.name;
-    }
-  }
-
-  return str;
 }
