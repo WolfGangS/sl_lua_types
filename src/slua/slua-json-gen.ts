@@ -249,7 +249,7 @@ function builtInSluaTables(): SLuaGlobal {
 }
 
 function newConstFromLSL(lsl: ConstDef): SLuaConstDef {
-  const type = remapLSLType(
+  const type = remapLSLConstType(
     KnownTypes.constants[lsl.name] ?? lsl.type,
   );
   const con = newConst(lsl.name, lsl.desc, type);
@@ -1188,6 +1188,16 @@ function remapLSLReturnType(func: string, rtype: string | null): SLuaType {
       return `number`;
     default:
       return type as SLuaType;
+  }
+}
+
+function remapLSLConstType(rtype: string | null): SLuaBaseType {
+  const type = remapLSLType(rtype);
+  switch (type) {
+    case "integer":
+      return "number";
+    default:
+      return type;
   }
 }
 
