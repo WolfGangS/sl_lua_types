@@ -17,7 +17,7 @@ export class Node {
   protected _parent: Node | null;
   public text = "";
 
-  constructor(node: node, parent: Node | null) {
+  constructor(node: node, parent: Node | null = null) {
     this.node = node;
     this._parent = parent;
   }
