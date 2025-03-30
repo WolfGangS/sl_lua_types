@@ -2,5 +2,4 @@
 Makefile
 node_modules/
 *.js
-data/
 no/

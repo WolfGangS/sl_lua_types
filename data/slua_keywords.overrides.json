@@ -1,0 +1,14 @@
+[
+    {
+        "key": [ "global", "ll", "props", "TakeControls", "signatures", 0, "args", 1, "type" ],
+        "value": [ "boolean" ]
+    },
+    {
+        "key": [ "global", "ll", "props", "TakeControls", "signatures", 0, "args", 2, "type" ],
+        "value": [ "boolean" ]
+    },
+    {
+        "key": [ "global", "NULL_KEY", "type" ],
+        "value": "uuid"
+    }
+]

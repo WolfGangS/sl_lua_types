@@ -8,22 +8,29 @@ import {
   FuncArgs,
   FuncDef,
   FuncDefs,
+  Overrides,
   StrObj,
   TypeDef,
 } from "../types.d.ts";
-import _KnownTypes from "../../data/knownTypes.json" with { type: "json" };
-
-type KnownTypeConstSet = { [k: string]: string | undefined };
-type KnownTypeFuncSet = { [k: string]: KnownTypeFunc | undefined };
-type KnownTypeFunc = {
-  args?: { [k: string]: SLuaType | undefined };
-  return?: SLuaType;
+// import _KnownTypes from "../../data/knownTypes.json" with { type: "json" };
+import _overrides from "../../data/slua_keywords.overrides.json" with {
+  type: "json",
 };
+import { applyPatches } from "../util.ts";
 
-const KnownTypes = _KnownTypes as {
-  functions: KnownTypeFuncSet;
-  constants: KnownTypeConstSet;
-};
+const overides = _overrides as Overrides;
+
+// type KnownTypeConstSet = { [k: string]: string | undefined };
+// type KnownTypeFuncSet = { [k: string]: KnownTypeFunc | undefined };
+// type KnownTypeFunc = {
+//   args?: { [k: string]: SLuaType | undefined };
+//   return?: SLuaType;
+// };
+
+// const KnownTypes = _KnownTypes as {
+//   functions: KnownTypeFuncSet;
+//   constants: KnownTypeConstSet;
+// };
 
 const quaternion = "quaternion";
 const uuid = "uuid";
@@ -110,8 +117,6 @@ type SLua = {
 };
 
 let remapLSLArgType: (
-  func: string,
-  arg: string,
   type: string | null,
 ) => SLuaType = remapLSLArgTypeStrict;
 
@@ -132,6 +137,8 @@ export async function buildSluaJson(
     types: builtInSluaTypes(),
     classes: builtInSluaClasses(),
   };
+
+  applyPatches(slua, overides);
 
   return slua;
 }
@@ -250,9 +257,7 @@ function builtInSluaTables(): SLuaGlobal {
 }
 
 function newConstFromLSL(lsl: ConstDef): SLuaConstDef {
-  const type = remapLSLConstType(
-    KnownTypes.constants[lsl.name] ?? lsl.type,
-  );
+  const type = remapLSLConstType(lsl.type);
   const con = newConst(lsl.name, lsl.desc, type);
   con.link = lsl.link;
   con.value = lsl.value;
@@ -1067,7 +1072,7 @@ function buildSLuaEventsFromLSL(lslEvents: EventDefs): StrObj<SLuaEventDef> {
     const event: SLuaEventDef = {
       def: "event",
       name: lslEvent.name,
-      args: remapLSLFuncArgs(lslEvent.name, lslEvent.args),
+      args: remapLSLFuncArgs(lslEvent.args),
       desc: lslEvent.desc,
       link: lslEvent.link,
     };
@@ -1098,8 +1103,8 @@ function buildSLuaLLFuncsFromLSL(lslFuncs: FuncDefs): SLuaGlobalTable {
       name: name.substring(2),
       signatures: [
         newSFuncSignature(
-          remapLSLReturnType(name, result),
-          remapLSLFuncArgs(name, args),
+          remapLSLReturnType(result),
+          remapLSLFuncArgs(args),
         ),
       ],
     };
@@ -1113,37 +1118,24 @@ function buildSLuaLLFuncsFromLSL(lslFuncs: FuncDefs): SLuaGlobalTable {
   };
 }
 
-function remapLSLFuncArgs(func: string, lslArgs: FuncArgs): SLuaFuncArgs {
+function remapLSLFuncArgs(lslArgs: FuncArgs): SLuaFuncArgs {
   const args: SLuaFuncArgs = [];
   for (const lslArg of lslArgs) {
     args.push(
       newArg(
         lslArg.name,
         lslArg.desc,
-        remapLSLArgType(func, lslArg.name, lslArg.type),
+        remapLSLArgType(lslArg.type),
       ),
     );
   }
   return args;
 }
 
-function getKnownFuncArgumentType(
-  func: string,
-  name: string,
-): SLuaType | null {
-  const knownFunc = KnownTypes.functions[func];
-  if (!knownFunc) return null;
-  const knownArgs = knownFunc.args;
-  if (!knownArgs) return null;
-  return knownArgs[name] ?? null;
-}
-
 function remapLSLArgTypeLoose(
-  func: string,
-  argname: string,
   type: string | null,
 ): SLuaType {
-  const ntype = remapLSLArgTypeStrict(func, argname, type);
+  const ntype = remapLSLArgTypeStrict(type);
   switch (ntype) {
     case "integer":
     case "number":
@@ -1155,12 +1147,8 @@ function remapLSLArgTypeLoose(
 }
 
 function remapLSLArgTypeStrict(
-  func: string,
-  argname: string,
   rtype: string | null,
 ): SLuaType {
-  const known = getKnownFuncArgumentType(func, argname);
-  if (known) return known;
   const type = remapLSLType(rtype);
   switch (type) {
     case integer:
@@ -1172,17 +1160,7 @@ function remapLSLArgTypeStrict(
   }
 }
 
-function getKnownFuncReturnType(
-  func: string,
-): SLuaType | null {
-  const knownFunc = KnownTypes.functions[func];
-  if (!knownFunc) return null;
-  return knownFunc.return ?? null;
-}
-
-function remapLSLReturnType(func: string, rtype: string | null): SLuaType {
-  const known = getKnownFuncReturnType(func);
-  if (known) return known;
+function remapLSLReturnType(rtype: string | null): SLuaType {
   const type = remapLSLType(rtype);
   switch (type) {
     case integer:

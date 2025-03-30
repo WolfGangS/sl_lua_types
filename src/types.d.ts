@@ -45,3 +45,9 @@ export type TypeDef = {
   name: string;
   desc: string;
 };
+
+export type Override = {
+  key: (string | number)[];
+  value: string | number | boolean;
+};
+export type Overrides = Override[];

@@ -5,21 +5,15 @@ import {
   EventDefs,
   FuncArgs,
   FuncDefs,
-  StrObj,
+  Overrides,
   TypeDefs,
 } from "../types.d.ts";
-import { isStrObj as _isStrObj } from "../util.ts";
+import { applyPatches, isStrObj as _isStrObj } from "../util.ts";
 import _overrides from "../../data/lsl_keywords.overrides.json" with {
   type: "json",
 };
 
-type Override = {
-  key: (string | number)[];
-  value: string | number | boolean;
-};
-type Overrides = Override[];
-
-const Overides = _overrides as Overrides;
+const overides = _overrides as Overrides;
 export type LSLDef = {
   functions: FuncDefs;
   constants: ConstDefs;
@@ -36,63 +30,9 @@ export async function buildLSLJson(file: string): Promise<LSLDef> {
     types: generateTypes(map.get("types") as Map),
   };
 
-  applyPatches(lsl);
+  applyPatches(lsl, overides);
 
   return lsl;
-}
-
-function applyPatches(lsl: LSLDef): void {
-  for (const override of Overides) {
-    applyPatch(override, lsl);
-  }
-}
-
-function applyPatch(patch: Override, lsl: LSLDef): void {
-  let obj: StrObj<unknown> | unknown[] | unknown = lsl;
-  const path = [...patch.key].reverse();
-
-  const err = new Error(
-    `Path hit non indexable point, patch ${JSON.stringify(patch.key)}`,
-  );
-
-  while (path.length > 1) {
-    const key = path.pop() as string | number;
-    if (typeof key == "number" && isArray(obj, patch)) {
-      obj = obj[key];
-    } else if (typeof key == "string" && isStrObj(obj, patch)) {
-      obj = obj[key];
-    } else {
-      throw err;
-    }
-  }
-
-  const key = path.pop();
-  if (typeof key == "number" && isArray(obj, patch)) {
-    obj[key] = patch.value;
-  } else if (typeof key == "string" && isStrObj(obj, patch)) {
-    obj[key] = patch.value;
-  } else {
-    throw err;
-  }
-}
-
-function isArray(obj: unknown, patch: Override): obj is unknown[] {
-  if (obj instanceof Array) return true;
-  throw new Error(
-    `Indexing array with non number path ${JSON.stringify(patch)}`,
-  );
-}
-
-function isStrObj(
-  obj: unknown,
-  patch: Override,
-): obj is StrObj<unknown> {
-  if (!_isStrObj(obj)) {
-    throw new Error(
-      `Indexing StrObj with non string path ${JSON.stringify(patch)}`,
-    );
-  }
-  return true;
 }
 
 function generateFunctions(funcs: Map): FuncDefs {
