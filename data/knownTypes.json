@@ -5,7 +5,7 @@
     "functions": {
         "llTakeControls": {
             "args": {
-                "Controls": "integer|number",
+                "Controls": [ "integer", "number" ],
                 "Accept": "boolean",
                 "PassOn": "boolean"
             }

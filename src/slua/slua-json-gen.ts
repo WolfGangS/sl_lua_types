@@ -44,6 +44,7 @@ export type SLuaBaseType =
   | "self"
   | "any"
   | "()"
+  | "numeric"
   | SLuaFuncSig
   | { custom: string }
   | { value: string | number };
@@ -118,7 +119,7 @@ export async function buildSluaJson(
   file: string,
   strict: boolean = true,
 ): Promise<SLua> {
-  if (strict) remapLSLArgType = remapLSLArgTypeLoose;
+  if (!strict) remapLSLArgType = remapLSLArgTypeLoose;
   const lsl = await buildLSLJson(file);
   const slua: SLua = {
     global: {

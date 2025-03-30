@@ -7,6 +7,7 @@
     "build-slua-docs": "deno -R src/main.ts data/keywords_lsl_formatted.llsd.xml slua-docs > dist/ll.d.json",
     "build-slua-json": "deno -R src/main.ts data/keywords_lsl_formatted.llsd.xml slua-json > dist/slua_keywords.json",
     "build-lsl-json": "deno -R src/main.ts data/keywords_lsl_formatted.llsd.xml lsl-json > dist/lsl_keywords.json",
+    "generate-markdown": "deno run -R -W -E src/main.ts ./data/keywords_lsl_formatted.llsd.xml slua-markdown docs/output docs/html",
     // build and install
     "install": "deno task build && deno task copy-to-install",
     "copy-to-install" : "mkdir -p $HOME/.sl-luau && cp ./dist/* $HOME/.sl-luau/.",

@@ -11,6 +11,7 @@ import {
   SLuaType,
 } from "./slua-json-gen.ts";
 import { StrObj } from "../types.d.ts";
+import { generateCodeSample } from "./slua-common.ts";
 
 type Doc = {
   documentation: string;
@@ -94,7 +95,7 @@ export async function buildSluaDocs(
 function outputGlobals(
   data: SLuaGlobal | SLuaGlobalTableProps,
   docs: Docs,
-  section: string = "",
+  section: string[] = [],
 ) {
   for (const key in data) {
     const entry = data[key];
@@ -117,7 +118,7 @@ function outputGlobals(
       case "table": {
         const table = entry as SLuaGlobalTable;
         outputTable(`${section}${table.name}`, docs);
-        outputGlobals(table.props, docs, `${section}${table.name}.`);
+        outputGlobals(table.props, docs, [...section, table.name]);
         break;
       }
       default:
@@ -137,9 +138,9 @@ function outputTable(name: string, docs: Docs) {
 function outputEventDoc(
   event: SLuaEventDef,
   docs: Docs,
-  section: string = "",
+  section: string[] = [],
 ) {
-  docs[`${prefix}/global/${section}${name}`] = {
+  docs[`${prefix}/global/${[...section, name].join(".")}`] = {
     documentation: event.desc || "n./a",
     learn_more_link: event.link,
   };
@@ -148,9 +149,9 @@ function outputEventDoc(
 function outputConstDoc(
   con: SLuaConstDef,
   docs: Docs,
-  section: string = "",
+  section: string[] = [],
 ) {
-  docs[`${prefix}/global/${section}${name}`] = {
+  docs[`${prefix}/global/${[...section, name].join(".")}`] = {
     documentation: con.value + " : " + (con.desc || "n/a"),
     learn_more_link: con.link,
     code_sample: name,
@@ -161,75 +162,11 @@ function outputConstDoc(
 function outputFuncDoc(
   func: SLuaFuncDef,
   docs: Docs,
-  section: string = "",
+  section: string[] = [],
 ) {
   docs[`${prefix}/global/${section}${func.name}`] = {
     documentation: func.desc || "n./a",
     learn_more_link: func.link,
-    code_sample: generateCodeSample(
-      `${section}${func.name}`,
-      func.signatures[0],
-    ),
+    code_sample: generateCodeSample(section, func, 0),
   };
-}
-
-function generateCodeSample(name: string, result: SLuaFuncSig) {
-  const args = [];
-
-  for (const arg of result.args) {
-    const type = cleanType(arg.type);
-    switch (type) {
-      case "rotation":
-      case "quaternion":
-        args.push("quaternion(0,0,0,1)");
-        break;
-      case "integer":
-        args.push("integer(1)");
-        break;
-      case "numeric":
-        args.push("1");
-        break;
-      case "float":
-      case "number":
-        args.push("3.14");
-        break;
-      case "list":
-      case "{}":
-        args.push("{}");
-        break;
-      case "key":
-      case "uuid":
-        args.push("uuid('')");
-        break;
-      case "vector":
-        args.push("vector.create(1,1,1)");
-        break;
-      case "boolean":
-      case "bool":
-        args.push("true");
-        break;
-      case "string":
-        args.push("'test'");
-        break;
-      default:
-        args.push("nil");
-        console.error("Can't create default for:", arg);
-        break;
-    }
-  }
-
-  return `${name.substring(2)}(${args.join(", ")})`;
-}
-
-function cleanType(stype: SLuaType): string {
-  const type = stype instanceof Array ? stype[0] : stype;
-  if (type == null) {
-    throw new Error("Cannot cleantype null for generated function");
-  }
-  return type.replaceAll("...", "")
-    .replaceAll("(", "")
-    .replaceAll(")", "")
-    .replaceAll("?", "")
-    .split("|")
-    .shift() as string;
 }

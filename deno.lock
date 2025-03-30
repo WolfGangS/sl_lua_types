@@ -1,17 +1,24 @@
 {
   "version": "4",
   "specifiers": {
+    "jsr:@deno-library/template@*": "0.2.1",
     "jsr:@libs/xml@*": "6.0.4",
     "jsr:@maxim-mazurok/sax-ts@*": "1.2.13",
     "jsr:@std/bytes@^1.0.5": "1.0.5",
     "jsr:@std/encoding@*": "1.0.7",
     "jsr:@std/encoding@1": "1.0.7",
+    "jsr:@std/fs@*": "1.0.14",
     "jsr:@std/html@*": "1.0.3",
+    "jsr:@std/path@*": "1.0.8",
+    "jsr:@std/path@^1.0.8": "1.0.8",
     "jsr:@std/streams@*": "1.0.9",
     "jsr:@std/yaml@*": "1.0.5",
     "jsr:@takker/md5@*": "0.1.0"
   },
   "jsr": {
+    "@deno-library/template@0.2.1": {
+      "integrity": "d79da4da0afb9fb4d93838b4debcc8650706f657037ba1d927c0aac2a364bd1a"
+    },
     "@libs/xml@6.0.4": {
       "integrity": "c896f17016dbf5f2d62496e0bd6cd7db145c05987d0e45d4dd2c87785a60f528"
     },
@@ -24,8 +31,17 @@
     "@std/encoding@1.0.7": {
       "integrity": "f631247c1698fef289f2de9e2a33d571e46133b38d042905e3eac3715030a82d"
     },
+    "@std/fs@1.0.14": {
+      "integrity": "1e84bf0b95fe08f41f1f4aea9717bbf29f45408a56ce073b0114474ce1c9fccf",
+      "dependencies": [
+        "jsr:@std/path@^1.0.8"
+      ]
+    },
     "@std/html@1.0.3": {
       "integrity": "7a0ac35e050431fb49d44e61c8b8aac1ebd55937e0dc9ec6409aa4bab39a7988"
+    },
+    "@std/path@1.0.8": {
+      "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
     },
     "@std/streams@1.0.9": {
       "integrity": "a9d26b1988cdd7aa7b1f4b51e1c36c1557f3f252880fa6cc5b9f37078b1a5035",
