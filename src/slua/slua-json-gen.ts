@@ -1290,7 +1290,10 @@ function builtInSluaClasses(): StrObj<SLuaClassDef> {
       "__div": newNoUrlFunc(
         "__div",
         "Meta function to allow for '/' operation",
-        iSelfNI,
+        [
+          newSelfFuncSig("number", integer),
+          newSelfFuncSig("number", "number"),
+        ],
       ),
       "__unm": newNoUrlFunc(
         "__unm",
