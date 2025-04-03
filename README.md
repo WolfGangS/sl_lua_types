@@ -4,7 +4,7 @@ See [here](https://wiki.secondlife.com/wiki/Luau_Alpha) and
 [here](https://wiki.secondlife.com/wiki/Lua_FAQ) for more information about lua
 in secondlife.
 
-<img src="images/example.png" alt="Example of syntax highlighting and hovertips" />
+<img src="docs/html/images/example.png" alt="Example of syntax highlighting and hovertips" />
 
 Created with plenty of help and original findings from
 [@gwigz](https://github.com/gwigz)

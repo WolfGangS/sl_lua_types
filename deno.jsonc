@@ -1,0 +1,31 @@
+{
+  "tasks": {
+    // build
+    "build": "deno task build-slua-defs && deno task build-slua-docs && deno task build-slua-sele && deno task build-lsl-json && deno task build-slua-json",
+    "build-slua-defs": "deno -R -E src/main.ts data/keywords_lsl_formatted.llsd.xml slua-defs > dist/ll.d.luau",
+    "build-slua-sele": "deno -R -E src/main.ts data/keywords_lsl_formatted.llsd.xml slua-sele > dist/sl_selene_defs.yml",
+    "build-slua-docs": "deno -R -E src/main.ts data/keywords_lsl_formatted.llsd.xml slua-docs > dist/ll.d.json",
+    "build-slua-json": "deno -R -E src/main.ts data/keywords_lsl_formatted.llsd.xml slua-json > dist/slua_keywords.json",
+    "build-lsl-json": "deno -R -E src/main.ts data/keywords_lsl_formatted.llsd.xml lsl-json > dist/lsl_keywords.json",
+    "generate-markdown": "deno run -R -W -E src/main.ts ./data/keywords_lsl_formatted.llsd.xml slua-markdown docs/output docs/html",
+    // build and install
+    "install": "deno task build && deno task copy-to-install",
+    "copy-to-install" : "mkdir -p $HOME/.sl-luau && cp ./dist/* $HOME/.sl-luau/.",
+    // Download version
+    "build-dl": "deno task build-defs-dl && deno task build-docs-dl && deno task build-sele-dl && deno task build-json-dl",
+    "build-slua-defs-dl": "deno -R src/main.ts data/keywords_lsl_download.llsd.xml slua-defs > dist/ll.d.luau",
+    "build-slua-sele-dl": "deno -R src/main.ts data/keywords_lsl_download.llsd.xml slua-sele > dist/sl_selene_defs.yml",
+    "build-slua-docs-dl": "deno -R src/main.ts data/keywords_lsl_download.llsd.xml slua-docs > dist/ll.d.json",
+    "build-slua-json-dl": "deno -R src/main.ts data/keywords_lsl_download.llsd.xml slua-json > dist/slua_keywords.json",
+    "build-lsl-json-dl": "deno -R src/main.ts data/keywords_lsl_download.llsd.xml lsl-json > dist/lsl_keywords.json",
+    // Test stuff
+    "test": "deno task test-lsl-json && deno task test-slua-json && deno task test-slua-defs && deno task test-slua-docs",
+    "test-lsl-json": "deno -R src/main.ts data/keywords_lsl_formatted.llsd.xml lsl-json > dist/lsl_keywords.json",
+    "test-slua-json": "deno -R src/main.ts data/keywords_lsl_formatted.llsd.xml slua-json > dist/slua_keywords.json",
+    "test-slua-defs": "deno -R src/main.ts data/keywords_lsl_formatted.llsd.xml slua-defs > dist/ll.d.luau",
+    "test-slua-docs": "deno -R src/main.ts data/keywords_lsl_formatted.llsd.xml slua-docs > dist/ll.d.json"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1"
+  }
+}
