@@ -18,11 +18,9 @@ jobs:
         with:
           deno-version: v2.x
       - uses: actions/setup-node@v4
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         with:
           node-version: "22.x"
       - name: Node CI
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         run: npm ci
       - name: Download
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
