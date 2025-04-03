@@ -17,9 +17,12 @@
   },
   "homepage": "https://github.com/WolfGangS/sl_lua_types#readme",
   "dependencies": {
-    "@caspertech/node-metaverse": "^0.8.1"
+    "@caspertech/node-metaverse": "^0.8.1",
+    "ejs": "^3.1.10",
+    "markdown-to-html-cli": "^5.0.3"
   },
   "devDependencies": {
+    "@types/ejs": "^3.1.5",
     "typescript": "^5.8.2"
   }
 }

@@ -99,7 +99,7 @@ export type SLuaClassDef = {
 
 export type SLuaTableDef = StrObj<SLuaDef>;
 
-export type SLuaGlobalTableProp = SLuaFuncDef | SLuaConstDef;
+export type SLuaGlobalTableProp = SLuaDef | SLuaGlobalTable;
 export type SLuaGlobalTableProps = StrObj<SLuaGlobalTableProp>;
 
 export type SLuaGlobalTable = {
@@ -111,7 +111,7 @@ export type SLuaGlobalTable = {
 export type SLuaGlobal = StrObj<SLuaDef | SLuaGlobalTable>;
 
 type SLua = {
-  global: SLuaGlobal;
+  global: SLuaGlobalTable;
   types: StrObj<SLuaTypeDef>;
   classes: StrObj<SLuaClassDef>;
 };
@@ -128,11 +128,15 @@ export async function buildSluaJson(
   const lsl = await buildLSLJson(file);
   const slua: SLua = {
     global: {
-      ...builtInSluaFuncs(),
-      ...builtInSluaTables(),
-      ...buildSLuaGlobalsFromLSL(lsl),
-      ...buildSLuaEventsFromLSL(lsl.events),
-      ...buildSLuaConstsFromLSL(lsl.constants),
+      def: "table",
+      name: "SLua",
+      props: {
+        ...builtInSluaFuncs(),
+        ...builtInSluaTables(),
+        ...buildSLuaGlobalsFromLSL(lsl),
+        ...buildSLuaEventsFromLSL(lsl.events),
+        ...buildSLuaConstsFromLSL(lsl.constants),
+      },
     },
     types: builtInSluaTypes(),
     classes: builtInSluaClasses(),
@@ -253,6 +257,7 @@ function builtInSluaTables(): SLuaGlobal {
     bit32: buildBit32(),
     lljson: buildLLJSON(),
     llbase64: buildLLBase64(),
+    vector: buildVector(),
   };
 }
 
@@ -448,6 +453,266 @@ function newLuauFunc(
     results,
   );
 }
+
+function addToTable(g: SLuaGlobalTable, p: SLuaFuncDef | SLuaConstDef) {
+  g.props[p.name] = p;
+}
+
+function buildVector(): SLuaGlobalTable {
+  const newVecFunc = (
+    name: string,
+    desc: string,
+    results: SLuaFuncSig[] = [],
+  ): SLuaFuncDef => {
+    return newLuauFunc(
+      "bit32",
+      name,
+      desc,
+      results,
+    );
+  };
+  const vec: SLuaGlobalTable = {
+    def: "table",
+    name: "vector",
+    props: {},
+  };
+  addToTable(
+    vec,
+    newConst(
+      "zero",
+      "A Zero vector <0,0,0>",
+      "vector",
+    ),
+  );
+
+  addToTable(
+    vec,
+    newConst(
+      "one",
+      "A one vector <1,1,1>",
+      "vector",
+    ),
+  );
+
+  addToTable(
+    vec,
+    newVecFunc(
+      "create",
+      "Creates a new vector with the given component values",
+      [
+        newSFuncSignature(
+          "vector",
+          [
+            newArg("x", "x value of vector", ["number", "integer"]),
+            newArg("y", "y value of vector", ["number", "integer"]),
+            newArg("z", "z value of vector", ["number", "integer"]),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  addToTable(
+    vec,
+    newVecFunc(
+      "magnitude",
+      "Calculates the magnitude of a given vector.",
+      [
+        newSFuncSignature(
+          "number",
+          [
+            newArg("vec", "", "vector"),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  addToTable(
+    vec,
+    newVecFunc(
+      "normalize",
+      "Computes the normalized version (unit vector) of a given vector.",
+      [
+        newSFuncSignature(
+          "vector",
+          [
+            newArg("vec", "", "vector"),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  addToTable(
+    vec,
+    newVecFunc(
+      "cross",
+      "Computes the cross product of two vectors.",
+      [
+        newSFuncSignature(
+          "vector",
+          [
+            newArg("vec1", "", "vector"),
+            newArg("vec2", "", "vector"),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  addToTable(
+    vec,
+    newVecFunc(
+      "dot",
+      "Computes the dot product of two vectors.",
+      [
+        newSFuncSignature(
+          "number",
+          [
+            newArg("vec1", "", "vector"),
+            newArg("vec2", "", "vector"),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  addToTable(
+    vec,
+    newVecFunc(
+      "angle",
+      "Computes the angle between two vectors in radians. The axis, if specified, is used to determine the sign of the angle.",
+      [
+        newSFuncSignature(
+          "number",
+          [
+            newArg("vec1", "", "vector"),
+            newArg("vec2", "", "vector"),
+            newOArg("axis", "", "vector"),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  addToTable(
+    vec,
+    newVecFunc(
+      "floor",
+      "Applies `math.floor` to every component of the input vector.",
+      [
+        newSFuncSignature(
+          "vector",
+          [
+            newArg("vec", "", "vector"),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  addToTable(
+    vec,
+    newVecFunc(
+      "ceil",
+      "Applies `math.ceil` to every component of the input vector.",
+      [
+        newSFuncSignature(
+          "vector",
+          [
+            newArg("vec", "", "vector"),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  addToTable(
+    vec,
+    newVecFunc(
+      "abs",
+      "Applies `math.abs` to every component of the input vector.",
+      [
+        newSFuncSignature(
+          "vector",
+          [
+            newArg("vec", "", "vector"),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  addToTable(
+    vec,
+    newVecFunc(
+      "sign",
+      "Applies `math.sign` to every component of the input vector.",
+      [
+        newSFuncSignature(
+          "vector",
+          [
+            newArg("vec", "", "vector"),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  addToTable(
+    vec,
+    newVecFunc(
+      "clamp",
+      "Applies `math.clamp` to every component of the input vector.",
+      [
+        newSFuncSignature(
+          "vector",
+          [
+            newArg("vec", "", "vector"),
+            newArg("min", "", "vector"),
+            newArg("max", "", "vector"),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  addToTable(
+    vec,
+    newVecFunc(
+      "max",
+      "Applies `math.max` to the corresponding components of the input vectors.",
+      [
+        newSFuncSignature(
+          "vector",
+          [
+            newVArg("vecs", "", "vector"),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  addToTable(
+    vec,
+    newVecFunc(
+      "min",
+      "Applies `math.min` to the corresponding components of the input vectors.",
+      [
+        newSFuncSignature(
+          "vector",
+          [
+            newVArg("vecs", "", "vector"),
+          ],
+        ),
+      ],
+    ),
+  );
+
+  return vec;
+}
+
 function buildBit32(): SLuaGlobalTable {
   const newBFunc = (
     name: string,
@@ -464,7 +729,7 @@ function buildBit32(): SLuaGlobalTable {
   const props: SLuaGlobalTableProps = {
     arshift: newBFunc(
       "arshift",
-      "Shifts n by i bits to the right (if i is negative, a left shift is performed instead). The most significant bit of n is propagated during the shift. When i is larger than 31, returns an integer with all bits set to the sign bit of n. When i is smaller than -31, 0 is returned",
+      "Shifts `n` by `i` bits to the right (if `i` is negative, a left shift is performed instead).\nThe most significant bit of `n` is propagated during the shift.\nWhen `i` is larger than `31`, returns an integer with all bits set to the sign bit of `n`.\nWhen `i` is smaller than `-31`, `0` is returned",
       [
         newSFuncSignature(
           "integer",
@@ -484,7 +749,7 @@ function buildBit32(): SLuaGlobalTable {
     ),
     band: newBFunc(
       "band",
-      "Performs a bitwise and of all input numbers and returns the result. If the function is called with no arguments, an integer with all bits set to 1 is returned.",
+      "Performs a bitwise and of all input numbers and returns the result.\nIf the function is called with no arguments, an integer with all bits set to `1` is returned.",
       [
         newSFuncSignature(
           "integer",
@@ -520,7 +785,7 @@ function buildBit32(): SLuaGlobalTable {
     ),
     bor: newBFunc(
       "bor",
-      "Performs a bitwise or of all input numbers and returns the result. If the function is called with no arguments, zero is returned.",
+      "Performs a bitwise or of all input numbers and returns the result.\nIf the function is called with no arguments, `0` is returned.",
       [
         newSFuncSignature(
           "integer",
@@ -538,7 +803,7 @@ function buildBit32(): SLuaGlobalTable {
     ),
     bxor: newBFunc(
       "bxor",
-      "Performs a bitwise xor (exclusive or) of all input numbers and returns the result. If the function is called with no arguments, zero is returned.",
+      "Performs a bitwise xor (exclusive or) of all input numbers and returns the result.\nIf the function is called with no arguments, `0` is returned.",
       [
         newSFuncSignature(
           "integer",
@@ -556,7 +821,7 @@ function buildBit32(): SLuaGlobalTable {
     ),
     btest: newBFunc(
       "btest",
-      "Perform a bitwise and of all input numbers, and return true iff the result is not 0. If the function is called with no arguments, true is returned.",
+      "Perform a bitwise and of all input numbers, and return `true` if the result is not `0`.\nIf the function is called with no arguments, `true` is returned.",
       [
         newSFuncSignature(
           "boolean",
@@ -568,7 +833,7 @@ function buildBit32(): SLuaGlobalTable {
     ),
     extract: newBFunc(
       "extract",
-      "Extracts bits of n at position f with a width of w, and returns the resulting integer. w defaults to 1, so a two-argument version of extract returns the bit value at position f. Bits are indexed starting at 0. Errors if f and f+w-1 are not between 0 and 31.",
+      "Extracts bits of `n` at position `f` with `a` width of `w`, and returns the resulting integer.\n`w` defaults to 1, so a two-argument version of extract returns the bit value at position `f`.\nBits are indexed starting at `0`.\nErrors if `f` and `f+w-1` are not between `0` and `31`.",
       [
         newSFuncSignature(
           "integer",
@@ -590,7 +855,7 @@ function buildBit32(): SLuaGlobalTable {
     ),
     lrotate: newBFunc(
       "lrotate",
-      "Rotates n to the left by i bits (if i is negative, a right rotate is performed instead); the bits that are shifted past the bit width are shifted back from the right.",
+      "Rotates `n` to the left by `i` bits (if `i` is negative, a right rotate is performed instead)\nThe bits that are shifted past the bit width are shifted back from the right.",
       [
         newSFuncSignature(
           "integer",
@@ -610,7 +875,7 @@ function buildBit32(): SLuaGlobalTable {
     ),
     lshift: newBFunc(
       "lshift",
-      "Shifts n to the left by i bits (if i is negative, a right shift is performed instead). When i is outside of [-31..31] range, returns 0.",
+      "Shifts `n` to the left by `i` bits (if `i` is negative, a right shift is performed instead).\nWhen `i` is outside of `[-31..31]` range, returns `0`.",
       [
         newSFuncSignature(
           "integer",
@@ -630,7 +895,7 @@ function buildBit32(): SLuaGlobalTable {
     ),
     replace: newBFunc(
       "replace",
-      "Replaces bits of n at position f and width w with r, and returns the resulting integer. w defaults to 1, so a three-argument version of replace changes one bit at position f to r (which should be 0 or 1) and returns the result. Bits are indexed starting at 0. Errors if f and f+w-1 are not between 0 and 31.",
+      "Replaces bits of `n` at position `f` and width `w` with `r`, and returns the resulting integer.\n`w` defaults to `1`, so a three-argument version of replace changes one bit at position `f` to `r` (which should be `0` or `1`) and returns the result.\nBits are indexed starting at `0`.\nErrors if `f` and `f+w-1` are not between `0` and `31`.",
       [
         newSFuncSignature(
           "integer",
@@ -654,7 +919,7 @@ function buildBit32(): SLuaGlobalTable {
     ),
     rrotate: newBFunc(
       "rrotate",
-      "Rotates n to the right by i bits (if i is negative, a left rotate is performed instead); the bits that are shifted past the bit width are shifted back from the left.",
+      "Rotates `n` to the right by `i` bits (if `i` is negative, a left rotate is performed instead)\nThe bits that are shifted past the bit width are shifted back from the left.",
       [
         newSFuncSignature(
           "integer",
@@ -674,7 +939,7 @@ function buildBit32(): SLuaGlobalTable {
     ),
     rshift: newBFunc(
       "rshift",
-      "Shifts n to the right by i bits (if i is negative, a left shift is performed instead). When i is outside of [-31..31] range, returns 0.",
+      "Shifts `n` to the right by `i` bits (if `i` is negative, a left shift is performed instead).\nWhen `i` is outside of `[-31..31]` range, returns `0`.",
       [
         newSFuncSignature(
           "integer",
@@ -694,7 +959,7 @@ function buildBit32(): SLuaGlobalTable {
     ),
     countlz: newBFunc(
       "countlz",
-      "Returns the number of consecutive zero bits in the 32-bit representation of n starting from the left-most (most significant) bit. Returns 32 if n is zero.",
+      "Returns the number of consecutive zero bits in the 32-bit representation of `n` starting from the left-most (most significant) bit.\nReturns `32` if `n` is `0`.",
       [
         newSFuncSignature(
           "integer",
@@ -712,7 +977,7 @@ function buildBit32(): SLuaGlobalTable {
     ),
     countrz: newBFunc(
       "countrz",
-      "Returns the number of consecutive zero bits in the 32-bit representation of n starting from the right-most (least significant) bit. Returns 32 if n is zero.",
+      "Returns the number of consecutive zero bits in the 32-bit representation of `n` starting from the right-most (least significant) bit.\nReturns `32` if `n` is `0`.",
       [
         newSFuncSignature(
           "integer",
@@ -855,197 +1120,233 @@ function builtInSluaFuncs(): StrObj<SLuaFuncDef> {
 
 function builtInSluaClasses(): StrObj<SLuaClassDef> {
   const selfArg = newArg("self", "", "self");
-  return {
-    "uuid": {
-      def: "class",
-      name: "uuid",
-      props: {
-        istruthy: newConst(
-          "istruthy",
-          "property to check if uuid is valid",
-          "boolean",
-        ),
-      },
-      funcs: {
-        "__tostring": newNoUrlFunc(
-          "__tostring",
-          "converts uuid to a string",
-          [
-            newSFuncSignature("string", [selfArg]),
-          ],
-        ),
-      },
+  const newSelfFuncSig = function (
+    result: SLuaBaseType | SLuaBaseType[],
+    arg: SLuaType,
+  ) {
+    return newSFuncSignature(result, [
+      selfArg,
+      newArg("other", "", arg),
+    ]);
+  };
+  const classes: StrObj<SLuaClassDef> = {};
+  classes["uuid"] = {
+    def: "class",
+    name: "uuid",
+    props: {
+      istruthy: newConst(
+        "istruthy",
+        "property to check if uuid is valid",
+        "boolean",
+      ),
     },
-    [quaternion]: {
-      def: "class",
-      name: quaternion,
-      props: {
-        x: newConst(
-          "x",
-          `x property of ${quaternion}`,
-          "number",
-        ),
-        y: newConst(
-          "y",
-          `y property of ${quaternion}`,
-          "number",
-        ),
-        z: newConst(
-          "z",
-          `z property of ${quaternion}`,
-          "number",
-        ),
-        s: newConst(
-          "s",
-          `s property of ${quaternion}`,
-          "number",
-        ),
-      },
-      funcs: {},
-    },
-    [integer]: {
-      def: "class",
-      name: integer,
-      props: {},
-      funcs: {
-        "__add": newNoUrlFunc(
-          "__add",
-          "Meta function to allow for '+' operation",
-          [
-            newSFuncSignature("integer", [
-              selfArg,
-              newArg("other", "", "integer"),
-            ]),
-            newSFuncSignature("number", [
-              selfArg,
-              newArg("other", "", "number"),
-            ]),
-          ],
-        ),
-        "__sub": newNoUrlFunc(
-          "__sub",
-          "Meta function to allow for '-' operation",
-          [
-            newSFuncSignature("integer", [
-              selfArg,
-              newArg("other", "", "integer"),
-            ]),
-            newSFuncSignature("number", [
-              selfArg,
-              newArg("other", "", "number"),
-            ]),
-          ],
-        ),
-        "__mul": newNoUrlFunc(
-          "__mul",
-          "Meta function to allow for '*' operation",
-          [
-            newSFuncSignature("integer", [
-              selfArg,
-              newArg("other", "", "integer"),
-            ]),
-            newSFuncSignature("number", [
-              selfArg,
-              newArg("other", "", "number"),
-            ]),
-          ],
-        ),
-        "__div": newNoUrlFunc(
-          "__div",
-          "Meta function to allow for '/' operation",
-          [
-            newSFuncSignature("integer", [
-              selfArg,
-              newArg("other", "", "integer"),
-            ]),
-            newSFuncSignature("number", [
-              selfArg,
-              newArg("other", "", "number"),
-            ]),
-          ],
-        ),
-        "__unm": newNoUrlFunc(
-          "__unm",
-          "Meta function to allow for '-' negation",
-          [
-            newSFuncSignature("integer", [selfArg]),
-          ],
-        ),
-        "__mod": newNoUrlFunc(
-          "__mod",
-          "Meta function to allow for '%' operation",
-          [
-            newSFuncSignature("integer", [
-              selfArg,
-              newArg("other", "", "integer"),
-            ]),
-            newSFuncSignature("number", [
-              selfArg,
-              newArg("other", "", "number"),
-            ]),
-          ],
-        ),
-        "__pow": newNoUrlFunc(
-          "__pow",
-          "Meta function to allow for '^' operation",
-          [
-            newSFuncSignature("integer", [
-              selfArg,
-              newArg("other", "", "integer"),
-            ]),
-            newSFuncSignature("number", [
-              selfArg,
-              newArg("other", "", "number"),
-            ]),
-          ],
-        ),
-        "__idiv": newNoUrlFunc(
-          "__idiv",
-          "Meta function to allow for '//' operation",
-          [
-            newSFuncSignature("integer", [
-              selfArg,
-              newArg("other", "", "integer"),
-            ]),
-            newSFuncSignature("number", [
-              selfArg,
-              newArg("other", "", "number"),
-            ]),
-          ],
-        ),
-        "__eq": newNoUrlFunc(
-          "__eq",
-          "Meta function to allow for '==' operation",
-          [
-            newSFuncSignature("integer", [
-              selfArg,
-              newArg("other", "", "integer"),
-            ]),
-          ],
-        ),
-        "__lt": newNoUrlFunc(
-          "__lt",
-          "Meta function to allow for '<' and '>' operation",
-          [
-            newSFuncSignature("integer", [
-              selfArg,
-              newArg("other", "", "integer"),
-            ]),
-          ],
-        ),
-        "__le": newNoUrlFunc(
-          "__le",
-          "Meta function to allow for '<=' and '>=' operation",
-          [
-            newSFuncSignature("integer", [
-              selfArg,
-              newArg("other", "", "integer"),
-            ]),
-          ],
-        ),
-      },
+    funcs: {
+      "__tostring": newNoUrlFunc(
+        "__tostring",
+        "converts uuid to a string",
+        [
+          newSFuncSignature("string", [selfArg]),
+        ],
+      ),
     },
   };
+  classes[quaternion] = {
+    def: "class",
+    name: quaternion,
+    props: {
+      x: newConst(
+        "x",
+        `x property of ${quaternion}`,
+        "number",
+      ),
+      y: newConst(
+        "y",
+        `y property of ${quaternion}`,
+        "number",
+      ),
+      z: newConst(
+        "z",
+        `z property of ${quaternion}`,
+        "number",
+      ),
+      s: newConst(
+        "s",
+        `s property of ${quaternion}`,
+        "number",
+      ),
+    },
+    funcs: {
+      "__mul": newNoUrlFunc(
+        "__mul",
+        "multiply vector/quaternion by quaternion",
+        [
+          newSFuncSignature("vector", [
+            selfArg,
+            newArg("other", "", "vector"),
+          ]),
+          newSFuncSignature("quaternion", [
+            selfArg,
+            newArg("other", "", "quaternion"),
+          ]),
+        ],
+      ),
+    },
+  };
+  classes.vector = {
+    def: "class",
+    name: "vector",
+    props: {
+      x: newConst(
+        "x",
+        `x property of vector`,
+        "number",
+      ),
+      y: newConst(
+        "y",
+        `y property of vector`,
+        "number",
+      ),
+      z: newConst(
+        "z",
+        `z property of vector`,
+        "number",
+      ),
+    },
+    funcs: {
+      "__mul": newNoUrlFunc(
+        "__mul",
+        "multiply vector by number, vector, or quaternion",
+        [
+          newSelfFuncSig("vector", "vector"),
+          newSelfFuncSig("vector", quaternion),
+          newSelfFuncSig("vector", "number"),
+        ],
+      ),
+      "__div": newNoUrlFunc(
+        "__div",
+        "divide vector by number, vector, or quaternion",
+        [
+          newSelfFuncSig("vector", "vector"),
+          newSelfFuncSig("vector", quaternion),
+          newSelfFuncSig("vector", "number"),
+        ],
+      ),
+      "__idiv": newNoUrlFunc(
+        "__idiv",
+        "floor divide vector by number, vector, or quaternion",
+        [
+          newSelfFuncSig("vector", "vector"),
+          newSelfFuncSig("vector", quaternion),
+          newSelfFuncSig("vector", "number"),
+        ],
+      ),
+      "__add": newNoUrlFunc(
+        "__add",
+        "add two vectors",
+        [
+          newSelfFuncSig("vector", "vector"),
+        ],
+      ),
+      "__sub": newNoUrlFunc(
+        "__sub",
+        "subtract vector from vector",
+        [
+          newSelfFuncSig("vector", "vector"),
+        ],
+      ),
+      "__unm": newNoUrlFunc(
+        "__unm",
+        "negate a vector",
+        [
+          newSFuncSignature("vector", [selfArg]),
+        ],
+      ),
+    },
+  };
+  const iSelfNI = [
+    newSelfFuncSig(integer, integer),
+    newSelfFuncSig("number", "number"),
+  ];
+  classes[integer] = {
+    def: "class",
+    name: integer,
+    props: {},
+    funcs: {
+      "__add": newNoUrlFunc(
+        "__add",
+        "Meta function to allow for '+' operation",
+        iSelfNI,
+      ),
+      "__sub": newNoUrlFunc(
+        "__sub",
+        "Meta function to allow for '-' operation",
+        iSelfNI,
+      ),
+      "__mul": newNoUrlFunc(
+        "__mul",
+        "Meta function to allow for '*' operation",
+        iSelfNI,
+      ),
+      "__div": newNoUrlFunc(
+        "__div",
+        "Meta function to allow for '/' operation",
+        iSelfNI,
+      ),
+      "__unm": newNoUrlFunc(
+        "__unm",
+        "Meta function to allow for '-' negation",
+        [
+          newSFuncSignature("integer", [selfArg]),
+        ],
+      ),
+      "__mod": newNoUrlFunc(
+        "__mod",
+        "Meta function to allow for '%' operation",
+        iSelfNI,
+      ),
+      "__pow": newNoUrlFunc(
+        "__pow",
+        "Meta function to allow for '^' operation",
+        iSelfNI,
+      ),
+      "__idiv": newNoUrlFunc(
+        "__idiv",
+        "Meta function to allow for '//' operation",
+        iSelfNI,
+      ),
+      "__eq": newNoUrlFunc(
+        "__eq",
+        "Meta function to allow for '==' operation",
+        [
+          newSFuncSignature("integer", [
+            selfArg,
+            newArg("other", "", "integer"),
+          ]),
+        ],
+      ),
+      "__lt": newNoUrlFunc(
+        "__lt",
+        "Meta function to allow for '<' and '>' operation",
+        [
+          newSFuncSignature("integer", [
+            selfArg,
+            newArg("other", "", "integer"),
+          ]),
+        ],
+      ),
+      "__le": newNoUrlFunc(
+        "__le",
+        "Meta function to allow for '<=' and '>=' operation",
+        [
+          newSFuncSignature("integer", [
+            selfArg,
+            newArg("other", "", "integer"),
+          ]),
+        ],
+      ),
+    },
+  };
+  return classes;
 }
 
 function buildSLuaConstsFromLSL(lslConsts: ConstDefs): StrObj<SLuaConstDef> {

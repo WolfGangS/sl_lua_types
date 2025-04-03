@@ -4,11 +4,8 @@ import {
   SLuaConstDef,
   SLuaEventDef,
   SLuaFuncDef,
-  SLuaFuncSig,
-  SLuaGlobal,
   SLuaGlobalTable,
   SLuaGlobalTableProps,
-  SLuaType,
 } from "./slua-json-gen.ts";
 import { StrObj } from "../types.d.ts";
 import { generateCodeSample } from "./slua-common.ts";
@@ -58,7 +55,7 @@ export async function buildSluaDocs(
     },
   };
 
-  outputGlobals(data.global, docs);
+  outputGlobals(data.global.props, docs);
   //   outputClasses(data.classes, docs);
 
   return docs;
@@ -93,7 +90,7 @@ export async function buildSluaDocs(
 // }
 
 function outputGlobals(
-  data: SLuaGlobal | SLuaGlobalTableProps,
+  data: SLuaGlobalTableProps,
   docs: Docs,
   section: string[] = [],
 ) {
@@ -111,8 +108,7 @@ function outputGlobals(
         break;
       }
       case "func": {
-        const func = entry as SLuaFuncDef;
-        outputFuncDoc(func, docs, section);
+        outputFuncDoc(entry as SLuaFuncDef, docs, section);
         break;
       }
       case "table": {
@@ -140,7 +136,7 @@ function outputEventDoc(
   docs: Docs,
   section: string[] = [],
 ) {
-  docs[`${prefix}/global/${[...section, name].join(".")}`] = {
+  docs[`${prefix}/global/${[...section, event.name].join(".")}`] = {
     documentation: event.desc || "n./a",
     learn_more_link: event.link,
   };
@@ -151,7 +147,7 @@ function outputConstDoc(
   docs: Docs,
   section: string[] = [],
 ) {
-  docs[`${prefix}/global/${[...section, name].join(".")}`] = {
+  docs[`${prefix}/global/${[...section, con.name].join(".")}`] = {
     documentation: con.value + " : " + (con.desc || "n/a"),
     learn_more_link: con.link,
     code_sample: name,
@@ -164,7 +160,9 @@ function outputFuncDoc(
   docs: Docs,
   section: string[] = [],
 ) {
-  docs[`${prefix}/global/${section}${func.name}`] = {
+  docs[
+    `${prefix}/global/${[...section, func.name].join(".")}`
+  ] = {
     documentation: func.desc || "n./a",
     learn_more_link: func.link,
     code_sample: generateCodeSample(section, func, 0),

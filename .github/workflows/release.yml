@@ -32,21 +32,25 @@ jobs:
           BOT_PASSWORD: ${{ secrets.BOT_PASSWORD }}
           BOT_LOCATION: ${{ secrets.BOT_LOCATION }}
         run: npx tsc download/keywords.ts && node download/keywords.js "$BOT_FIRST_NAME" "$BOT_LAST_NAME" "$BOT_PASSWORD" "$BOT_LOCATION"
-      - name: Build Download
+      - name: Copy Download
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-        run: deno task build-dl
+        run: rm data/keywords_lsl_formatted.llsd.xml && cp data/keywords_lsl_download.llsd.xml data/keywords_lsl_formatted.llsd.xml
       - name: Build
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         run: deno task build
+      - name: Document
+        run: deno task generate-markdown && cp -R dist docs/html/dist
       - uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
       - uses: actions/upload-artifact@v4
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        with:
+          name: docs
+          path: docs/html/
+      - uses: actions/upload-artifact@v4
         with:
           name: keywords
-          path: data/keywords_lsl_download.llsd.xml
+          path: data/keywords_lsl_formatted.llsd.xml
       - name: Hash
         run: sha1sum dist/* | sha1sum | cut -d " " -f 1
       - name: Converts Markdown to HTML
@@ -64,4 +68,4 @@ jobs:
         id: create_release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: sl_lua_types.zip, dist/keywords.json, dist/ll.d.json, dist/ll.d.luau, dist/sl_selene_defs.yml
+          artifacts: sl_lua_types.zip, dist/lsl_keywords.json dist/slua_keywords.json, dist/ll.d.json, dist/ll.d.luau, dist/sl_selene_defs.yml

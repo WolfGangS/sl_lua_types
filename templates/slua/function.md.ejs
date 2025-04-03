@@ -1,0 +1,48 @@
+## <% if (section.name){ %>[<%=section.name%>](<%=section.url%>).<%}%><%=func.name%>
+```
+<% if (section.name){ %><%=section.name%>.<%}%><%=func.name%><%-definition%>
+```
+
+<%=func.desc%>
+
+<% if(alternatives) { %>
+<%=alternatives%>
+
+<% } %>
+<% if(custom) { %>
+<%-custom%>
+<%} else {%>
+### Example
+
+```lua
+<%-example%>
+```
+
+<%}%>
+<% if(Object.entries(externalLinks).length) {%>
+### External Links
+<% for(const entry of Object.entries(externalLinks)) { %>
+ - [<%= entry[0] %>](<%= entry[1] %>)
+<% } %>
+
+<% } %>
+
+<div class="wrap-collabsible">
+<input id="collapsible" class="toggle" type="checkbox">
+<label for="collapsible" class="lbl-toggle">Raw Function Spec</label>
+<div class="collapsible-content">
+<div class="content-inner">
+
+```json
+<%-JSON.stringify(func,null,2)%>
+```
+
+</div>
+</div>
+</div>
+
+<% if (section.name){ %>
+[< Back to `<%=section.name%>`](<%=section.url%>)
+<%} else {%>
+[< Back to `SLua`](../index.html)
+<%}%>

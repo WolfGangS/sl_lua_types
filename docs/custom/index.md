@@ -1,1 +1,44 @@
-# Secondlife Scripting Documentation
+# Secondlife SLua Scripting Info
+
+## [Generated SLua Documentation](slua/index.html)
+
+A basic 'wiki like' layout documenting current SLua `functions`, `types`,
+`classes`, and `constants`.
+
+## [Secondlife SLua Type Defs](https://github.com/WolfGangS/sl_lua_types)
+
+A set of files for adding type hinting and autocompletion allong with error
+checking to vscode and other editors that support the lsp protocol
+
+<img src="images/example.png" alt="Example of syntax highlighting and hovertips" />
+
+- [Type Definitions](dist/ll.d.luau)
+- [Type Documentation](dist/ll.d.json)
+- [Selene Standard Library](dist/sl_selene_defs.yml)
+
+With [Instructions](readme.html) on how to set them up
+
+## [VSCode Secondlife External Editor Extension](https://github.com/WolfGangS/SL-External-Editor?tab=readme-ov-file)
+
+An extension desinged to make working with vscode as the external editor for
+secondlife easier
+
+### Features
+
+- Automatic detection of sl viewers temporary script files when using external
+  editor feature
+
+### Planned Features
+
+- Automatic downloading of typedefs
+- Preprocessor tool integration for `LSL` and `SLua`
+
+## For Tooling Devs
+
+I also publish the generated intermediary json for both `LSL` and `SLua`. These
+may be of use to you as they contain extra information and are in a format
+easier to parse in my opinion than the `keywords_llsd.xml` file Linden Labs
+generates.
+
+- [LSL Json](dist/lsl_keywords.json)
+- [SLua Json](dist/slua_keywords.json)

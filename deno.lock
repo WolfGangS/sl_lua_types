@@ -63,6 +63,9 @@
     "packageJson": {
       "dependencies": [
         "npm:@caspertech/node-metaverse@~0.8.1",
+        "npm:@types/ejs@^3.1.5",
+        "npm:ejs@^3.1.10",
+        "npm:markdown-to-html-cli@^5.0.3",
         "npm:typescript@^5.8.2"
       ]
     }

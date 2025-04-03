@@ -1,0 +1,52 @@
+## <%=table.name%>
+
+<%=table.desc%>
+<% if(custom) {%><%=custom%><%}%>
+
+<% if(tables.length) { %>### Packages
+<% if(tables.length > 10) {%>|||||
+|---|---|---|---|<%let i = 0; for(const table of tables) { %><% if(!(i % 4)){%>
+|<%}%>[<%= table.name %>](<%=table.name%>.html)|<% i++; }%>
+<% } else {
+for(const table of tables) {%>
+ - [<%= table.name %>](<%=table.name%>.html)<% } %>
+<% } } %>
+
+<% if(funcs.length) { %>### Functions
+<% if(funcs.length > 10) {%>|||||
+|---|---|---|---|<%let i = 0; for(const func of funcs) { %><% if(!(i % 4)){%>
+|<%}%>[<%= func.name %>](functions/<%=func.name%>.html)|<% i++; }%>
+<% } else {
+for(const func of funcs) {%>
+ - [<%= func.name %>](functions/<%=func.name%>.html)<% } %>
+<% } } %>
+
+<% if(classes.length) { %>### Classes
+<% if(classes.length > 10) {%>|||||
+|---|---|---|---|<%let i = 0; for(const cls of classes) { %><% if(!(i % 4)){%>
+|<%}%>[<%= cls.name %>](classes/<%=cls.name%>.html)|<% i++; }%>
+<% } else {
+for(const cls of classes) {%>
+ - [<%= cls.name %>](classes/<%=cls.name%>.html)<% } %>
+<% } } %>
+
+<div class="wrap-collabsible">
+<input id="collapsible" class="toggle" type="checkbox">
+<label for="collapsible" class="lbl-toggle">Constants</label>
+<div class="collapsible-content">
+<div class="content-inner">
+
+<% if(props.length) { %>#### Properties
+<% if(props.length > 10) {%>||||
+|---|---|---|<%let i = 0; for(const prop of props) { %><% if(!(i % 3)){%>
+|<%}%>`<%= prop.name %>`|<% i++; }%>
+<% } else {
+for(const prop of props) {%>
+ - `<%= prop.name %>`<% } %>
+<% } } %>
+
+</div>
+</div>
+</div>
+
+[< Back to `Main`](../index.html)

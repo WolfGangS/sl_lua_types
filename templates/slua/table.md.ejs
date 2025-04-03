@@ -1,0 +1,30 @@
+## <% if (section.name){ %>[<%=section.name%>](<%=section.url%>).<%}%><%=table.name%>
+
+<%=table.desc%>
+<% if(custom) {%><%=custom%><%}%>
+
+### Structure
+
+<% if(props.length) { %>#### Properties
+<% if(props.length > 10) {%>|||||
+|---|---|---|---|<%let i = 0; for(const prop of props) { %><% if(!(i % 4)){%>
+|<%}%>`<%= prop.name %>`|<% i++; }%>
+<% } else {
+for(const prop of props) {%>
+ - `<%= prop.name %>`<% } %>
+<% } } %>
+
+<% if(funcs.length) { %>#### Functions
+<% if(funcs.length > 19) {%>|||||
+|---|---|---|---|<%let i = 0; for(const func of funcs) { %><% if(!(i % 4)){%>
+|<%}%>[<%= func.name %>](functions/<%=table.name%>.<%=func.name%>.html)|<% i++; }%>
+<% } else { %>
+|Name|Description|
+|----|----|<%for(const func of funcs) {%>
+|[<%= func.name %>](functions/<%=table.name%>.<%=func.name%>.html)|<%-func.desc.replaceAll("\n","<br>")%>|<% } %>
+<% } } %>
+<% if (section.name){ %>
+[< Back to `<%=section.name%>`](<%=section.url%>)
+<%} else {%>
+[< Back to `SLua`](index.html)
+<%}%>

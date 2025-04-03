@@ -1,8 +1,10 @@
 import { ensureDir } from "jsr:@std/fs";
 import * as path from "jsr:@std/path";
-import Template, { CompiledFunction } from "../template.ts";
+// @deno-types="npm:@types/ejs"
+import ejs from "npm:ejs";
 import {
   buildSluaJson,
+  SLuaClassDef,
   SLuaConstDef,
   SLuaDef,
   SLuaFuncDef,
@@ -17,38 +19,37 @@ import {
 // import { create as markdown } from "npm:markdown-to-html-cli";
 import { generate as markdown } from "../markdown-2-html.ts";
 
-type TemplateTable = { [k: string]: CompiledFunction | TemplateTable };
+const import_dirname = import.meta.dirname;
 
-let _templates: TemplateTable = {};
-const tpl = new Template({
-  isEscape: false,
-});
-
-async function loadTemplates(dir: string[]): Promise<TemplateTable> {
-  const dirPath = path.join(import.meta.dirname as string, ...dir);
-
-  const readDir = Deno.readDir(dirPath);
-
-  const templates: TemplateTable = {};
-
-  for await (const entry of readDir) {
-    if (entry.isFile && entry.name.endsWith(".tmpl")) {
-      templates[entry.name.substring(0, entry.name.length - 5)] = tpl.compile(
-        await Deno.readTextFile(
-          path.join(dirPath, entry.name),
-        ),
-      );
-    } else if (entry.isDirectory) {
-      templates[entry.name] = await loadTemplates([...dir, entry.name]);
-    }
-  }
-  return templates;
+if (typeof import_dirname != "string") {
+  throw new Error("Failed to get import dir");
 }
 
-async function getCustomTemplate(
+const templatePath = path.join(
+  import_dirname,
+  "..",
+  "..",
+  "templates",
+  "slua",
+);
+
+const ejsCache: { [k: string]: string } = {};
+
+ejs.fileLoader = function (filePath) {
+  filePath = path.resolve(filePath);
+  if (!filePath.startsWith(templatePath)) {
+    throw "Bad template";
+  }
+  if (ejsCache[filePath]) return ejsCache[filePath];
+  console.error(filePath);
+  ejsCache[filePath] = Deno.readTextFileSync(filePath + ".ejs");
+  return ejsCache[filePath];
+};
+
+async function getCustomMarkdown(
   type: string[] | string,
   name: string,
-): Promise<CompiledFunction | false> {
+): Promise<string | false> {
   type = type instanceof Array ? type : [type];
   try {
     const tpath = type.length ? [...type, name] : [name];
@@ -56,30 +57,10 @@ async function getCustomTemplate(
     const custom = await Deno.readTextFile(
       cpath.endsWith(".md") ? cpath : `${cpath}.md`,
     );
-    return tpl.compile(custom);
+    return custom;
   } catch (_e) {
     return false;
   }
-}
-
-function getTemplate(opath: string[]): CompiledFunction {
-  let path = [...opath];
-  if (!path[path.length - 1].endsWith(".md")) {
-    path[path.length - 1] += ".md";
-  }
-  path = path.reverse();
-  let templates: TemplateTable | CompiledFunction = _templates;
-  while (path.length) {
-    if (typeof templates == "function") {
-      throw `Early template ${JSON.stringify(opath)}`;
-    }
-    templates = templates[path.pop() as string] ?? null;
-    if (templates == null) throw `Unknown template ${JSON.stringify(opath)}`;
-  }
-  if (typeof templates == "function") {
-    return templates;
-  }
-  throw `Didn't reach template ${JSON.stringify(opath)}`;
 }
 
 let output_dir: string[] = [];
@@ -91,15 +72,49 @@ export async function generateSLuaMarkdown(
   htmlDir: string,
 ): Promise<void> {
   const slua = await buildSluaJson(keywords);
-  _templates = await loadTemplates(["templates"]);
 
   output_dir = [outputDir, "slua"];
   html_dir = [htmlDir, "slua"];
 
+  const start = performance.now();
+
   await ensureDir(path.join(...output_dir));
   await ensureDir(path.join(...html_dir));
 
-  await generateGlobals(slua.global);
+  await generateTableProps([], slua.global);
+  await generateTableProps([], {
+    def: "table",
+    name: "slua",
+    props: { ...slua.classes },
+  });
+  await generateTable([], slua.global, "index.md", "index", {
+    ...slua.classes,
+  });
+
+  const index = await Deno.readTextFile(
+    path.join("docs", "custom", "index.md"),
+  );
+  await Deno.writeTextFile(
+    path.join(htmlDir, "index.html"),
+    markdown("SLua Type Defs", index, {
+      corners: "https://github.com/WolfGangS/sl_lua_types",
+    }),
+  );
+  const readme = await Deno.readTextFile(
+    path.join("README.md"),
+  );
+  await Deno.writeTextFile(
+    path.join(htmlDir, "readme.html"),
+    markdown(
+      "SLua Type Defs",
+      readme.replaceAll("docs/html/images", "images"),
+      {
+        corners: "https://github.com/WolfGangS/sl_lua_types",
+      },
+    ),
+  );
+
+  console.error(performance.now() - start);
 }
 
 async function output(
@@ -124,12 +139,13 @@ async function output(
   );
 }
 
-async function generateGlobals(globals: SLuaGlobal) {
-  for (const k in globals) {
-    const global = globals[k];
-    await generateGlobal([], global);
+async function generateTableProps(section: string[], table: SLuaGlobalTable) {
+  for (const sub in table.props) {
+    await generateGlobal(
+      [...section],
+      table.props[sub],
+    );
   }
-  await generateIndex(globals);
 }
 
 async function generateGlobal(
@@ -139,12 +155,20 @@ async function generateGlobal(
   switch (global.def) {
     case "table":
       await generateTable([...section], global);
-      for (const sub in global.props) {
-        await generateGlobal(
-          [...section, global.name],
-          global.props[sub],
-        );
-      }
+      await generateTableProps([...section, global.name], global);
+      break;
+    case "class":
+      await generateClass([...section], global);
+      await generateTableProps([...section, global.name], {
+        def: "table",
+        name: global.name,
+        props: global.props,
+      });
+      await generateTableProps([...section, global.name], {
+        def: "table",
+        name: global.name,
+        props: global.funcs,
+      });
       break;
     case "func":
       await generateFunction(
@@ -153,6 +177,38 @@ async function generateGlobal(
       );
       break;
   }
+}
+
+async function generateClass(section: string[], cls: SLuaClassDef) {
+  const name = [...section, cls.name].join(".");
+
+  const fileName = `${name}`;
+
+  const data = {
+    cls,
+    externalLinks: {},
+    custom: await getCustomMarkdown("classes", fileName),
+    funcs: Object.values(cls.funcs).sort(sortNameAlpha),
+    props: Object.values(cls.props),
+    tables: [],
+    classes: [],
+    section: {
+      name: section.join("."),
+      url: `../${section.join(".")}.html`,
+    },
+  };
+
+  const out = await ejs.renderFile(
+    path.join(templatePath, "class.md"),
+    data,
+    {},
+  );
+
+  await output(
+    name,
+    ["classes", fileName],
+    out,
+  );
 }
 
 async function generateFunction(
@@ -165,171 +221,79 @@ async function generateFunction(
 
   const [sample, _sig] = generatePreferedCodeSample(section, func);
 
-  const template = (await getCustomTemplate("functions", fileName)) ||
-    getTemplate(["functions", "main.md"]);
-  const altTemplate = getTemplate(["functions", "_alternatives.md"]);
-  const jsonTemplate = getTemplate(["functions", "_json.md"]);
-
   const data = {
-    name: func.name,
+    func,
     definition: generateCombinedDefinition(func),
-    description: func.desc,
     example: sample,
     alternatives: "",
-    sectionLink: section.length
-      ? `[${section.join(".")}](../${section.join(".")}.html).`
-      : "",
-    section: section.join("."),
-    officialURL: func.link ? `[Official Documentation](${func.link})` : "",
-    sectionURL: `../${section.join(".")}.html`,
-    json: tpl.renderCompiled(jsonTemplate, {
-      json: JSON.stringify(func, null, 2),
-    }),
+    externalLinks: {
+      "Official URL": func.link ? func.link : "",
+    },
+    custom: await getCustomMarkdown("functions", fileName),
+    section: {
+      name: section.join("."),
+      url: `../${section.join(".")}.html`,
+    },
   };
+
+  const out = await ejs.renderFile(
+    path.join(templatePath, "function.md"),
+    data,
+    {},
+  );
+
   await output(
     name,
     ["functions", fileName],
-    tpl.renderCompiled(template, data),
+    out,
   );
 }
 
 async function generateTable(
   section: string[],
-  table: SLuaGlobalTable,
+  table: SLuaGlobalTable | SLuaGlobal,
+  template: string | null = null,
+  fileName: string | null = null,
+  extra: SLuaGlobalTableProps = {},
 ) {
   const name = [...section, table.name];
 
-  const fileName = `${name.join(".")}`;
-
-  const template = (await getCustomTemplate([], fileName)) ||
-    getTemplate(["table"]);
-
-  const props: SLuaGlobalTableProps = JSON.parse(
-    JSON.stringify(table.props),
-  );
-  const funcs: SLuaFuncDef[] = [];
-  const cons: SLuaConstDef[] = [];
-  for (const key in props) {
-    const elem = props[key];
-    switch (elem.def) {
-      case "const":
-        cons.push(elem);
-        break;
-      case "func":
-        funcs.push(elem);
-        break;
-      default:
-        throw "AAAAAAAAA WHAT DO";
-    }
-  }
+  fileName = fileName ?? `${name.join(".")}`;
 
   const data = {
-    name: name.join("."),
-    description: `${name.join(".")} Table`,
-    props: cons.length > 0 ? generatePropsTable(name, cons) : "",
-    funcs: funcs.length > 0 ? generateFuncsTable(name, funcs) : "",
-    section: section.length ? section.join(".") : "SLua",
-    sectionURL: section.length ? section.join(".") + ".hmtl" : "index.html",
+    table: table,
+    custom: await getCustomMarkdown([], fileName),
+    funcs: Object.values(table.props).filter((p) => p.def == "func").sort(
+      sortNameAlpha,
+    ),
+    props: Object.values(table.props).filter((p) => p.def == "const").sort(
+      sortNameAlpha,
+    ),
+    tables: Object.values(table.props).filter((p) => p.def == "table").sort(
+      sortNameAlpha,
+    ),
+    classes: Object.values(extra).filter((e) => e.def == "class").sort(
+      sortNameAlpha,
+    ),
+    section: {
+      name: section.join("."),
+      url: `${section.join(".")}.html`,
+    },
   };
-  output(name.join("."), [fileName], tpl.renderCompiled(template, data));
+  const out = await ejs.renderFile(
+    path.join(templatePath, template ?? "table.md"),
+    data,
+    {},
+  );
+  output(name.join("."), [fileName], out);
 }
 
-function generatePropsTable(
-  section: string[],
-  cons: SLuaConstDef[],
-): string {
-  const lines: string[] = [];
-  for (const con of cons) {
-    const name = [...section, con.name];
-    lines.push(
-      `|${con.name}|[Link](functions/${name.join(".")}.html)|`,
-    );
-  }
-  return tpl.renderCompiled(
-    getTemplate(["_props.md"]),
-    {
-      props: lines.sort().join("\n"),
-    },
-  );
+interface Named {
+  name: string;
 }
 
-function generateFuncsTable(
-  section: string[],
-  funcs: SLuaFuncDef[],
-): string {
-  const lines: string[] = [];
-
-  const funcn = funcs.map(
-    (f) => [...section, f.name].join("."),
-  );
-
-  funcn.sort();
-
-  const len = Math.ceil(funcn.length / 4.0);
-
-  for (let i = 0; i < len; i++) {
-    const func1 = funcn[i + (len * 0)] ?? false;
-    const func2 = funcn[i + (len * 1)] ?? false;
-    const func3 = funcn[i + (len * 2)] ?? false;
-    const func4 = funcn[i + (len * 3)] ?? false;
-    const link1 = func1 ? `[${func1}](functions/${func1}.html)` : "";
-    const link2 = func2 ? `[${func2}](functions/${func2}.html)` : "";
-    const link3 = func3 ? `[${func3}](functions/${func3}.html)` : "";
-    const link4 = func4 ? `[${func4}](functions/${func4}.html)` : "";
-    lines.push(
-      `|${link1}|${link2}|${link3}|${link4}|`,
-    );
-  }
-
-  //   for (const func of funcs) {
-  //     const name = ;
-  //     lines.push(
-  //       `|${name.join(".")}|[Link](functions/${name.join(".")}.html)|`,
-  //     );
-  //   }
-  return tpl.renderCompiled(
-    getTemplate(["_funcs.md"]),
-    {
-      funcs: lines.join("\n"),
-    },
-  );
-}
-
-async function generateIndex(globals: SLuaGlobal) {
-  const template = (await getCustomTemplate([], "index")) ||
-    getTemplate(["index"]);
-
-  const lines: string[] = [];
-
-  const tabs = Object.values(globals).filter((g) => g.def == "table");
-
-  const funcn = tabs.map(
-    (t) => t.name,
-  );
-
-  funcn.sort();
-
-  const len = Math.ceil(funcn.length / 4.0);
-
-  for (let i = 0; i < len; i++) {
-    const func1 = funcn[i + (len * 0)] ?? false;
-    const func2 = funcn[i + (len * 1)] ?? false;
-    const func3 = funcn[i + (len * 2)] ?? false;
-    const func4 = funcn[i + (len * 3)] ?? false;
-    const link1 = func1 ? `[${func1}](${func1}.html)` : "";
-    const link2 = func2 ? `[${func2}](${func2}.html)` : "";
-    const link3 = func3 ? `[${func3}](${func3}.html)` : "";
-    const link4 = func4 ? `[${func4}](${func4}.html)` : "";
-    lines.push(
-      `|${link1}|${link2}|${link3}|${link4}|`,
-    );
-  }
-
-  output(
-    "SLua",
-    ["index"],
-    tpl.renderCompiled(template, {
-      tables: lines.join("\n"),
-    }),
-  );
+function sortNameAlpha(a: Named, b: Named): number {
+  const ta = a.name.toUpperCase();
+  const tb = b.name.toUpperCase();
+  return (ta < tb) ? -1 : (ta > tb) ? 1 : 0;
 }

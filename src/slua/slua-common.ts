@@ -210,6 +210,8 @@ function generateCodeSampleForSig(
       case "string":
         args.push("'test'");
         break;
+      case "self":
+        break;
       default:
         if (isTypeCustom(type)) {
           args.push(type.custom);

@@ -1,11 +1,3 @@
-// import {
-//   endGroup,
-//   getInput,
-//   info,
-//   setFailed,
-//   setOutput,
-//   startGroup,
-// } from "@actions/core";
 import { create, formatConfig, Options } from "npm:markdown-to-html-cli";
 import * as path from "jsr:@std/path";
 

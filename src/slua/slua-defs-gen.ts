@@ -4,10 +4,8 @@ import {
   SLuaConstDef,
   SLuaEventDef,
   SLuaFuncDef,
-  SLuaGlobal,
   SLuaGlobalTable,
   SLuaGlobalTableProps,
-  SLuaTableDef,
   SLuaTypeDef,
 } from "./slua-json-gen.ts";
 import { StrObj } from "../types.d.ts";
@@ -32,7 +30,7 @@ export async function buildSluaTypeDefs(
     "\n\n" +
     outpufClassDefs(data.classes) +
     "\n\n" +
-    outputFunctionDefs(data.global as SLuaTableDef);
+    outputFunctionDefs(data.global.props);
 }
 
 function outpufClassDefs(classes: StrObj<SLuaClassDef>): string {
@@ -70,7 +68,7 @@ function outputTypeDefs(types: StrObj<SLuaTypeDef>): string {
 }
 
 function outputFunctionDefs(
-  funcs: SLuaGlobal | SLuaGlobalTableProps,
+  funcs: SLuaGlobalTableProps,
   depth: number = 0,
 ): string {
   let output = "";

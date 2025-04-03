@@ -5,7 +5,6 @@ import {
   SLuaConstDef,
   SLuaFuncDef,
   SLuaFuncSig,
-  SLuaGlobal,
   SLuaGlobalTable,
   SLuaGlobalTableProps,
   VarOpType,
@@ -59,12 +58,12 @@ export async function buildSluaSelene(
     globals: {},
   };
 
-  outputSluaGlobals(data.global, selene.globals);
+  outputSluaGlobals(data.global.props, selene.globals);
   return stringify(selene);
 }
 
 function outputSluaGlobals(
-  data: SLuaGlobal | SLuaGlobalTableProps,
+  data: SLuaGlobalTableProps,
   selene: SeleneGlobals,
   section: string = "",
 ): void {
