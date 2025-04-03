@@ -1,4 +1,7 @@
-## Types for luau-lsp for lua in secondlife
+## [Types for luau-lsp for lua in secondlife](https://slua.wlf.io)
+
+Visit https://slua.wlf.io for documentation and static links for latest
+downloads.
 
 See [here](https://wiki.secondlife.com/wiki/Luau_Alpha) and
 [here](https://wiki.secondlife.com/wiki/Lua_FAQ) for more information about lua
