@@ -11,8 +11,14 @@ type Markdown2HTMLConfig = {
   style?: string[];
 };
 
+const import_dirname = import.meta.dirname;
+
+if (typeof import_dirname != "string") {
+  throw new Error("Failed to get import dir");
+}
+
 const collapseCSS = await Deno.readTextFile(
-  path.join(import.meta.dirname, "..", "resources", "docs.css"),
+  path.join(import_dirname, "..", "resources", "docs.css"),
 );
 
 export function generate(
@@ -46,7 +52,9 @@ export function generate(
   const opts = formatConfig({
     ...options,
   });
-  opts.document.title = title;
+  if (opts.document) {
+    opts.document.title = title;
+  }
 
   return create({ ...opts });
 }

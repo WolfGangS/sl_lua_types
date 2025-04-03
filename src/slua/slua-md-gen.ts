@@ -5,7 +5,6 @@ import ejs from "npm:ejs";
 import {
   buildSluaJson,
   SLuaClassDef,
-  SLuaConstDef,
   SLuaDef,
   SLuaFuncDef,
   SLuaGlobal,
