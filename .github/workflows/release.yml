@@ -23,7 +23,7 @@ jobs:
       - name: Node CI
         run: npm ci
       - name: Download
-        if: ${{ startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/pages') }}
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         env:
           BOT_FIRST_NAME: ${{ secrets.BOT_FIRST_NAME }}
           BOT_LAST_NAME: ${{ secrets.BOT_LAST_NAME }}
@@ -31,7 +31,7 @@ jobs:
           BOT_LOCATION: ${{ secrets.BOT_LOCATION }}
         run: npx tsc download/keywords.ts && node download/keywords.js "$BOT_FIRST_NAME" "$BOT_LAST_NAME" "$BOT_PASSWORD" "$BOT_LOCATION"
       - name: Copy Download
-        if: ${{ startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/pages') }}
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         run: rm data/keywords_lsl_formatted.llsd.xml && cp data/keywords_lsl_download.llsd.xml data/keywords_lsl_formatted.llsd.xml
       - name: Build
         run: deno task build
@@ -70,7 +70,7 @@ jobs:
           artifacts: sl_lua_types.zip, dist/lsl_keywords.json dist/slua_keywords.json, dist/ll.d.json, dist/ll.d.luau, dist/sl_selene_defs.yml
 
   deploy-pages:
-    if: ${{ startsWith(github.ref, 'refs/heads/pages') }}
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     needs: build
     permissions:
