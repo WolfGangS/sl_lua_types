@@ -67,7 +67,7 @@ jobs:
         id: create_release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: sl_lua_types.zip, dist/lsl_keywords.json dist/slua_keywords.json, dist/ll.d.json, dist/ll.d.luau, dist/sl_selene_defs.yml
+          artifacts: sl_lua_types.zip, dist/lsl_keywords.json, dist/slua_keywords.json, dist/ll.d.json, dist/ll.d.luau, dist/sl_selene_defs.yml
 
   deploy-pages:
     if: ${{ startsWith(github.ref, 'refs/tags/v') }}
