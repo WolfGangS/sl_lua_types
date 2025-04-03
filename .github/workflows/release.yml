@@ -41,9 +41,10 @@ jobs:
         with:
           name: dist
           path: dist/
-      - uses: actions/upload-artifact@v4
+      - name: Upload docs as artifacts
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: docs
           path: docs/html/
       - uses: actions/upload-artifact@v4
         with:
