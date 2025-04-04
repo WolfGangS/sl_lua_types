@@ -56,6 +56,10 @@ input[type='checkbox'] {
     border-bottom-left-radius: 0;
 }
 
+div.markdown-style {
+    max-width: 1200px !important;
+}
+
 .collapsible-content .content-inner {
     background: rgba(0, 105, 255, .2);
     border-bottom: 1px solid rgba(0, 105, 255, .45);
@@ -71,6 +75,6 @@ input[type='checkbox'] {
 th:empty {
     display:none;
     }
-td:empty {
+/* td:empty {
 display:none;
-}
+} */

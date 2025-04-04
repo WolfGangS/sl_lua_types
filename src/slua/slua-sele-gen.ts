@@ -18,7 +18,7 @@ type SelenePropDef = {
 };
 
 type SeleneFuncDef = {
-  args: SeleneArgDef[];
+  args?: SeleneArgDef[];
   must_use: boolean;
 };
 
@@ -112,10 +112,14 @@ function outputSluaFunc(
   section: string,
 ) {
   const args = buildFuncArgs(func.signatures);
-  globals[`${section}${func.name}`] = {
-    args,
+  const sfunc: SeleneFuncDef = {
     must_use: func.pure,
+    args,
   };
+  // if (args.length) {
+  //   sfunc["args"] = args;
+  // }
+  globals[`${section}${func.name}`] = sfunc;
 }
 
 function castVarOpToSelene(
@@ -133,6 +137,8 @@ function castVarOpToSelene(
   }
 
   args = [...new Set(args)];
+
+  if (args.length > 1) args = args.filter((a) => typeof a == "string");
 
   if (args.length == 1) return args[0];
   else return args;

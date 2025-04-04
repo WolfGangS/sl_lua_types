@@ -5,6 +5,7 @@ import ejs from "npm:ejs";
 import {
   buildSluaJson,
   SLuaClassDef,
+  SLuaConstDef,
   SLuaDef,
   SLuaFuncDef,
   SLuaGlobal,
@@ -17,6 +18,7 @@ import {
 } from "./slua-common.ts";
 // import { create as markdown } from "npm:markdown-to-html-cli";
 import { generate as markdown } from "../markdown-2-html.ts";
+import { errorMonitor } from "node:events";
 
 const import_dirname = import.meta.dirname;
 
@@ -35,14 +37,16 @@ const templatePath = path.join(
 const ejsCache: { [k: string]: string } = {};
 
 ejs.fileLoader = function (filePath) {
-  filePath = path.resolve(filePath);
-  if (!filePath.startsWith(templatePath)) {
-    throw "Bad template";
+  const resolvedPath = path.resolve(filePath);
+  if (!resolvedPath.startsWith(templatePath)) {
+    throw new Error("Bad template");
   }
-  if (ejsCache[filePath]) return ejsCache[filePath];
-  console.error(filePath);
-  ejsCache[filePath] = Deno.readTextFileSync(filePath + ".ejs");
-  return ejsCache[filePath];
+  if (ejsCache[resolvedPath]) return ejsCache[resolvedPath];
+  console.error(resolvedPath);
+  ejsCache[resolvedPath] = Deno.readTextFileSync(
+    resolvedPath + (resolvedPath.endsWith(".ejs") ? "" : ".ejs"),
+  );
+  return ejsCache[resolvedPath];
 };
 
 async function getCustomMarkdown(
@@ -88,7 +92,7 @@ export async function generateSLuaMarkdown(
   });
   await generateTable([], slua.global, "index.md", "index", {
     ...slua.classes,
-  });
+  }, true);
 
   const index = await Deno.readTextFile(
     path.join("docs", "custom", "index.md"),
@@ -135,6 +139,17 @@ async function output(
     markdown(title, content, {
       corners: "https://github.com/WolfGangS/sl_lua_types",
     }),
+  );
+}
+
+async function ejsRenderFile(
+  path: string,
+  data: { [k: string]: any },
+  options: { [k: string]: any },
+) {
+  return await ejs.renderFile(
+    path,
+    data,
   );
 }
 
@@ -197,7 +212,7 @@ async function generateClass(section: string[], cls: SLuaClassDef) {
     },
   };
 
-  const out = await ejs.renderFile(
+  const out = await ejsRenderFile(
     path.join(templatePath, "class.md"),
     data,
     {},
@@ -235,7 +250,7 @@ async function generateFunction(
     },
   };
 
-  const out = await ejs.renderFile(
+  const out = await ejsRenderFile(
     path.join(templatePath, "function.md"),
     data,
     {},
@@ -254,10 +269,23 @@ async function generateTable(
   template: string | null = null,
   fileName: string | null = null,
   extra: SLuaGlobalTableProps = {},
+  valueSort: boolean = false,
 ) {
   const name = [...section, table.name];
 
   fileName = fileName ?? `${name.join(".")}`;
+
+  let props: RenderPropTable = Object.values(
+    table.props,
+  ).filter((p) => p.def == "const").sort(
+    sortNameAlpha,
+  );
+  if (props.length > 30) {
+    props = tableProps(props);
+    const e = props["#"];
+    delete props["#"];
+    props = { "Misc": e, ...props };
+  }
 
   const data = {
     table: table,
@@ -265,9 +293,7 @@ async function generateTable(
     funcs: Object.values(table.props).filter((p) => p.def == "func").sort(
       sortNameAlpha,
     ),
-    props: Object.values(table.props).filter((p) => p.def == "const").sort(
-      sortNameAlpha,
-    ),
+    props,
     tables: Object.values(table.props).filter((p) => p.def == "table").sort(
       sortNameAlpha,
     ),
@@ -279,7 +305,7 @@ async function generateTable(
       url: `${section.join(".")}.html`,
     },
   };
-  const out = await ejs.renderFile(
+  const out = await ejsRenderFile(
     path.join(templatePath, template ?? "table.md"),
     data,
     {},
@@ -295,4 +321,47 @@ function sortNameAlpha(a: Named, b: Named): number {
   const ta = a.name.toUpperCase();
   const tb = b.name.toUpperCase();
   return (ta < tb) ? -1 : (ta > tb) ? 1 : 0;
+}
+
+type RenderPropTable = SLuaConstDef[] | { [k: string]: RenderPropTable };
+
+function tableProps(
+  props: SLuaConstDef[],
+  splt: number = 1,
+): RenderPropTable {
+  const tblProps: { [k: string]: RenderPropTable } = {};
+  for (const prop of props) {
+    const parts = prop.name.split("_");
+    let start = "#";
+    if (parts.length > splt) {
+      start = parts.slice(0, splt).join("_");
+    }
+    if (!tblProps[start]) tblProps[start] = [];
+    tblProps[start].push(prop);
+  }
+
+  let misc: SLuaConstDef[] = [];
+  for (const start in tblProps) {
+    tblProps[start].sort(
+      (a: SLuaConstDef, b: SLuaConstDef) => {
+        return (a.value < b.value) ? -1 : (a.value > b.value) ? 1 : 0;
+      },
+    );
+    if (tblProps[start].length < 3) {
+      misc = [...misc, ...tblProps[start]];
+      delete tblProps[start];
+    } else if (splt < 2 && start != "#") {
+      tblProps[start] = tableProps(tblProps[start], 2);
+    }
+  }
+  if (misc.length > 0) {
+    misc = [...misc, ...(tblProps["#"] ?? [])];
+    misc.sort(sortNameAlpha);
+    tblProps["#"] = misc;
+  }
+  const ks = Object.keys(tblProps);
+  if (ks.length == 1) {
+    return { "#": tblProps[ks[0]] };
+  }
+  return tblProps;
 }

@@ -4,15 +4,7 @@
 <% if(custom) {%><%=custom%><%}%>
 
 ### Structure
-
-<% if(props.length) { %>#### Properties
-<% if(props.length > 10) {%>|||||
-|---|---|---|---|<%let i = 0; for(const prop of props) { %><% if(!(i % 4)){%>
-|<%}%>`<%= prop.name %>`|<% i++; }%>
-<% } else {
-for(const prop of props) {%>
- - `<%= prop.name %>` <%=prop.desc%><% } %>
-<% } } %>
+<%- include("./_props.md.ejs",{section,name:cls.name,props,table:false});  %>
 
 <% if(funcs.length) { %>#### Functions
 <% if(funcs.length > 19) {%>|||||

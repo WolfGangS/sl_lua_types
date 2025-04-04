@@ -30,23 +30,6 @@ for(const cls of classes) {%>
  - [<%= cls.name %>](classes/<%=cls.name%>.html)<% } %>
 <% } } %>
 
-<div class="wrap-collabsible">
-<input id="collapsible" class="toggle" type="checkbox">
-<label for="collapsible" class="lbl-toggle">Constants</label>
-<div class="collapsible-content">
-<div class="content-inner">
-
-<% if(props.length) { %>#### Properties
-<% if(props.length > 10) {%>||||
-|---|---|---|<%let i = 0; for(const prop of props) { %><% if(!(i % 3)){%>
-|<%}%>`<%= prop.name %>`|<% i++; }%>
-<% } else {
-for(const prop of props) {%>
- - `<%= prop.name %>`<% } %>
-<% } } %>
-
-</div>
-</div>
-</div>
+<%- include("./_props.md.ejs",{section:{name:"",url:""},name:table.name,props,columns:2});  %>
 
 [< Back to `Main`](../index.html)
