@@ -1,4 +1,4 @@
-## [Types for luau-lsp for lua in secondlife](https://slua.wlf.io)
+## [Types for luau-lsp for lua in Second Life](https://slua.wlf.io)
 
 Visit https://slua.wlf.io for documentation and static links for latest
 downloads.
