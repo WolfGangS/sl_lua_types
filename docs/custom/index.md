@@ -23,6 +23,8 @@ With [Instructions](readme.html) on how to set them up
 An extension designed to make working with vscode as the external editor for
 secondlife easier
 
+### [Get it here](https://marketplace.visualstudio.com/items?itemName=wlf-io.sl-external-editor)
+
 ### Features
 
 - Windows, Linux, Mac
