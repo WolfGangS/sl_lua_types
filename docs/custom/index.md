@@ -14,7 +14,9 @@ checking to vscode and other editors that support the lsp protocol
 
 - [Type Definitions](dist/ll.d.luau)
 - [Type Documentation](dist/ll.d.json)
-- [Selene Standard Library](dist/sl_selene_defs.yml)
+- Selene [Standard Library](dist/sl_selene_defs.yml) and
+  [Toml Config](dist/selene.toml)
+- [Snippets](dist/slua.code-snippets)
 
 With [Instructions](readme.html) on how to set them up
 

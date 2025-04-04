@@ -20,7 +20,7 @@
     "gen-json-slua" : "deno -R -E src/main.ts data/keywords_lsl.llsd.xml slua-json > dist/slua_keywords.json",
     "gen-json-lsl"  : "deno -R -E src/main.ts data/keywords_lsl.llsd.xml lsl-json > dist/lsl_keywords.json",
     // Build VSC
-    "gen-vsc-sippets": "deno -R -E src/main.ts data/keywords_lsl.llsd.xml slua-vsc-snippets > dist/luau.code-snippets",
+    "gen-vsc-sippets": "deno -R -E src/main.ts data/keywords_lsl.llsd.xml slua-vsc-snippets > dist/slua.code-snippets",
     // Generate Markdown
     "gen-markdown": "deno run -R -W -E src/main.ts ./data/keywords_lsl.llsd.xml slua-markdown docs/output docs/html",
     // build and install
