@@ -1,8 +1,9 @@
 {
   "tasks": {
     // build
-    "build": "deno task build-slua-defs && deno task build-slua-docs && deno task build-slua-sele && deno task build-slua-sele-config && deno task build-lsl-json && deno task build-slua-json",
+    "build": "deno task build-slua-defs && deno task build-slua-docs && deno task build-slua-vsc-snippets && deno task build-slua-sele && deno task build-slua-sele-config && deno task build-lsl-json && deno task build-slua-json",
     "build-slua-defs": "deno -R -E src/main.ts data/keywords_lsl_formatted.llsd.xml slua-defs > dist/ll.d.luau",
+    "build-slua-vsc-snippets": "deno -R -E src/main.ts data/keywords_lsl_formatted.llsd.xml slua-vsc-snippets > dist/luau.code-snippets",
     "build-slua-sele": "deno -R -E src/main.ts data/keywords_lsl_formatted.llsd.xml slua-sele > dist/sl_selene_defs.yml",
     "build-slua-sele-config": "deno -R -E src/main.ts data/keywords_lsl_formatted.llsd.xml slua-sele-config > dist/selene.toml",
     "build-slua-docs": "deno -R -E src/main.ts data/keywords_lsl_formatted.llsd.xml slua-docs > dist/ll.d.json",
