@@ -25,7 +25,7 @@ export async function buildSluaVSCodeSnippets(
       
       snippets[name] = {
         scope: "luau",
-        prefix: name,
+        prefix: `function ${name}`,
         body: [functionSignature],
         description: prop.desc ?? `Triggered when ${name} occurs.`
       };
