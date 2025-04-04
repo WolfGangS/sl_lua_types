@@ -4,6 +4,7 @@ import { buildSluaDocs } from "./slua/slua-docs-gen.ts";
 import { buildSluaJson } from "./slua/slua-json-gen.ts";
 import { generateSLuaMarkdown } from "./slua/slua-md-gen.ts";
 import { buildSluaSelene } from "./slua/slua-sele-gen.ts";
+import { buildSluaSeleneConfig } from "./slua/slua-sele-conf-gen.ts";
 import { buildSluaVSCodeSnippets } from "./slua/slua-vsc-snippets-gen.ts";
 
 const keywordsFile = Deno.args[0];
@@ -30,6 +31,9 @@ switch (output) {
     break;
   case "slua-sele":
     console.log(await buildSluaSelene(keywordsFile));
+    break;
+  case "slua-sele-config":
+    console.log(await buildSluaSeleneConfig(keywordsFile));
     break;
   case "slua-markdown":
     await generateSLuaMarkdown(keywordsFile, Deno.args[2], Deno.args[3]);
