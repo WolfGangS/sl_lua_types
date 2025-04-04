@@ -7,7 +7,7 @@ A basic 'wiki like' layout documenting current SLua `functions`, `types`,
 
 ## [Secondlife SLua Type Defs](https://github.com/WolfGangS/sl_lua_types)
 
-A set of files for adding type hinting and autocompletion allong with error
+A set of files for adding type hinting and autocompletion along with error
 checking to vscode and other editors that support the lsp protocol
 
 <img src="images/example.png" alt="Example of syntax highlighting and hovertips" />
@@ -20,17 +20,23 @@ With [Instructions](readme.html) on how to set them up
 
 ## [VSCode Secondlife External Editor Extension](https://github.com/WolfGangS/SL-External-Editor?tab=readme-ov-file)
 
-An extension desinged to make working with vscode as the external editor for
+An extension designed to make working with vscode as the external editor for
 secondlife easier
 
 ### Features
 
+- Windows, Linux, Mac
 - Automatic detection of sl viewers temporary script files when using external
   editor feature
+- [Luau Language Server](https://marketplace.visualstudio.com/items?itemName=JohnnyMorganz.luau-lsp)
+  (optional)
+- [Selene](https://marketplace.visualstudio.com/items?itemName=Kampfkarren.selene-vscode)
+  (optional)
+- Any Second Life viewer that has the `ExternalEditor` feature
+- Automatic type definition downloading for `SLua`
 
 ### Planned Features
 
-- Automatic downloading of typedefs
 - Preprocessor tool integration for `LSL` and `SLua`
 
 ## For Tooling Devs

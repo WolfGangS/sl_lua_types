@@ -12,7 +12,7 @@ in secondlife.
 Created with plenty of help and original findings from
 [@gwigz](https://github.com/gwigz)
 
-## VSCode installaion
+## VSCode installation
 
 ### Setup luau-lsp (Inline type checks, code completion, some linting)
 
@@ -28,7 +28,7 @@ to update them manually. When they change
    [here](https://github.com/WolfGangS/sl_lua_types/releases/latest)
 4. Extract and place those files somewhere memorable (`<user_dir>/.sl-luau/` for
    instance)
-5. Then Either globaly or in your project add the 2 files to the options with
+5. Then Either globally or in your project add the 2 files to the options with
    the following config
 
    ```JSON
