@@ -18,7 +18,6 @@ import {
 } from "./slua-common.ts";
 // import { create as markdown } from "npm:markdown-to-html-cli";
 import { generate as markdown } from "../markdown-2-html.ts";
-import { errorMonitor } from "node:events";
 
 const import_dirname = import.meta.dirname;
 
@@ -42,7 +41,6 @@ ejs.fileLoader = function (filePath) {
     throw new Error("Bad template");
   }
   if (ejsCache[resolvedPath]) return ejsCache[resolvedPath];
-  console.error(resolvedPath);
   ejsCache[resolvedPath] = Deno.readTextFileSync(
     resolvedPath + (resolvedPath.endsWith(".ejs") ? "" : ".ejs"),
   );
@@ -79,8 +77,6 @@ export async function generateSLuaMarkdown(
   output_dir = [outputDir, "slua"];
   html_dir = [htmlDir, "slua"];
 
-  const start = performance.now();
-
   await ensureDir(path.join(...output_dir));
   await ensureDir(path.join(...html_dir));
 
@@ -116,8 +112,6 @@ export async function generateSLuaMarkdown(
       },
     ),
   );
-
-  console.error(performance.now() - start);
 }
 
 async function output(

@@ -72,6 +72,12 @@ div.markdown-style {
     margin-bottom: 0;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    &[id^=warning] {
+        color: #d9534f;
+    }
+}
+
 th:empty {
     display:none;
     }
