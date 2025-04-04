@@ -5,6 +5,7 @@
     "jsr:@libs/xml@*": "6.0.4",
     "jsr:@maxim-mazurok/sax-ts@*": "1.2.13",
     "jsr:@std/bytes@^1.0.5": "1.0.5",
+    "jsr:@std/collections@^1.0.10": "1.0.10",
     "jsr:@std/encoding@*": "1.0.7",
     "jsr:@std/encoding@1": "1.0.7",
     "jsr:@std/fs@*": "1.0.14",
@@ -12,6 +13,7 @@
     "jsr:@std/path@*": "1.0.8",
     "jsr:@std/path@^1.0.8": "1.0.8",
     "jsr:@std/streams@*": "1.0.9",
+    "jsr:@std/toml@*": "1.0.3",
     "jsr:@std/yaml@*": "1.0.5",
     "jsr:@takker/md5@*": "0.1.0"
   },
@@ -27,6 +29,9 @@
     },
     "@std/bytes@1.0.5": {
       "integrity": "4465dd739d7963d964c809202ebea6d5c6b8e3829ef25c6a224290fbb8a1021e"
+    },
+    "@std/collections@1.0.10": {
+      "integrity": "903af106a3d92970d74e20f7ebff77d9658af9bef4403f1dc42a7801c0575899"
     },
     "@std/encoding@1.0.7": {
       "integrity": "f631247c1698fef289f2de9e2a33d571e46133b38d042905e3eac3715030a82d"
@@ -47,6 +52,12 @@
       "integrity": "a9d26b1988cdd7aa7b1f4b51e1c36c1557f3f252880fa6cc5b9f37078b1a5035",
       "dependencies": [
         "jsr:@std/bytes"
+      ]
+    },
+    "@std/toml@1.0.3": {
+      "integrity": "dd5c039860a312779ec19980be000d977ce8f56fadaa073d8f33632f21540ffb",
+      "dependencies": [
+        "jsr:@std/collections"
       ]
     },
     "@std/yaml@1.0.5": {
