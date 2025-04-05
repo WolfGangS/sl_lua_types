@@ -144,6 +144,11 @@ async function ejsRenderFile(
   return await ejs.renderFile(
     path,
     data,
+    {
+      escape: (e) => {
+        return e;
+      },
+    },
   );
 }
 

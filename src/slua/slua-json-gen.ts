@@ -1063,7 +1063,7 @@ function builtInSluaFuncs(): StrObj<SLuaFuncDef> {
     ]),
     toquaternion: newNoUrlFunc(
       "toquaternion",
-      "Creates a quaternion from a string argument in format <1,1,1,1>\nInvalid strings will return nil\n\n#### Caveat\n\nDue to an old error from lsl strings that match upto the closing `>` are interpreted as valid\n\nSo `<1,1,1,1` and `<1,1,1,1spoon` are both cast to `<1,1,1,1>`\n\nWhen testing if a string is a quaternion or a vector, you should test with `toquaternion` first.",
+      "Creates a quaternion from a string argument in format `<1,1,1,1>`\n\nInvalid strings will return `nil`\n\n#### Caveat\n\nDue to an old error from lsl strings that match upto the closing `>` are interpreted as valid\n\nSo `<1,1,1,1` and `<1,1,1,1spoon` are both cast to `<1,1,1,1>`\n\nWhen testing if a string is a quaternion or a vector, you should test with `toquaternion` first.",
       [
         newSFuncSignature([quaternion, "nil"], [
           newArg(
@@ -1076,7 +1076,7 @@ function builtInSluaFuncs(): StrObj<SLuaFuncDef> {
     ),
     tovector: newNoUrlFunc(
       "tovector",
-      "Creates a vector from a string argument in format <1,1,1>\nInvalid strings will return nil\n\n#### Caveat\n\nDue to an old error from lsl strings that match upto the closing `>` are interpreted as valid\n\nSo `<1,1,1`, `<1,1,1,1` and <1,1,1spoon` are all cast to `<1,1,1>`\n\nWhen testing if a string is a quaternion or a vector, you should test with `toquaternion` first.",
+      "Creates a vector from a string argument in format `<1,1,1>`\n\nInvalid strings will return `nil`\n\n#### Caveat\n\nDue to an old error from lsl strings that match upto the closing `>` are interpreted as valid\n\nSo `<1,1,1`, `<1,1,1,1` and `<1,1,1spoon` are all cast to `<1,1,1>`\n\nWhen testing if a string is a quaternion or a vector, you should test with `toquaternion` first.",
       [
         newSFuncSignature(["vector", "nil"], [
           newArg(
