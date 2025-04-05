@@ -22,13 +22,8 @@ if(props instanceof Array) { %>
 if(props["#"]) {%><%- include("./_props.md.ejs",{section,name,props:props["#"],header:false,columns,table:true}) %><%}
     for(const start in props) { %>
 <%if(start == "#") continue; %>
-<div class="wrap-collabsible">
-<input id="collapsible_<%=start%>" class="toggle" type="checkbox">
-<label for="collapsible_<%=start%>" class="lbl-toggle"><%=start%></label>
-<div class="collapsible-content">
-<div class="content-inner">
+<details>
+<summary><%=start%></summary>
 <%- include("./_props.md.ejs",{section,name,props:props[start],header:false,columns:start=="Misc" ? 2 : 3,table:true}) %>
-</div>
-</div>
-</div>
+</details>
 <% } } %>

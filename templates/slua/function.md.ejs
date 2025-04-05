@@ -27,19 +27,12 @@
 
 <% } %>
 
-<div class="wrap-collabsible">
-<input id="collapsible" class="toggle" type="checkbox">
-<label for="collapsible" class="lbl-toggle">Raw Function Spec</label>
-<div class="collapsible-content">
-<div class="content-inner">
-
+<details>
+<summary>Raw function spec json</summary>
 ```json
 <%-JSON.stringify(func,null,2)%>
 ```
-
-</div>
-</div>
-</div>
+</details>
 
 <% if (section.name){ %>
 [< Back to `<%=section.name%>`](<%=section.url%>)
