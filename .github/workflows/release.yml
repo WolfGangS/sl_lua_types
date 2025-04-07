@@ -40,11 +40,16 @@ jobs:
         with:
           name: dist
           path: dist/
-      - name: Upload docs as artifacts
+      - name: Upload docs HTML as artifacts
         id: deployment
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs/html/
+      - name: Upload docs markdown as artifacts
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/output/slua
       - uses: actions/upload-artifact@v4
         with:
           name: keywords
