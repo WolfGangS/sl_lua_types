@@ -36,7 +36,8 @@ jobs:
         run: deno task build
       - name: Document
         run: deno task markdown
-      - uses: actions/upload-artifact@v4
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
