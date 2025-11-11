@@ -1,7 +1,7 @@
 ## <% if (section.name){ %>[<%=section.name%>](<%=section.url%>).<%}%><%=func.name%>
-```
-<% if (section.name){ %><%=section.name%>.<%}%><%=func.name%><%-definition%>
-```
+<% for(const definition of definitions) {%>
+ - <% if (section.name){ %><%=section.name%>.<%}%><%=func.name%><%-definition%>
+<% } %>
 
 <%=func.desc%>
 
@@ -29,9 +29,11 @@
 
 <details>
 <summary>Raw function spec json</summary>
+
 ```json
 <%-JSON.stringify(func,null,2)%>
 ```
+
 </details>
 
 <% if (section.name){ %>

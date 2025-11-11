@@ -10,7 +10,7 @@ export type FuncDef = {
   energy: number;
   sleep: number;
   pure: boolean;
-  link: string;
+  link: string | null;
 };
 export type FuncArgs = FuncArg[];
 export type FuncArg = {

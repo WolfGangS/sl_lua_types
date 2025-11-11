@@ -54,6 +54,7 @@ function isPStrObj(
   patch: Override,
 ): obj is StrObj<unknown> {
   if (!isStrObj(obj)) {
+    console.error("Indexing StrObj with non string path", patch, obj);
     throw new Error(
       `Indexing StrObj with non string path ${JSON.stringify(patch)}`,
     );

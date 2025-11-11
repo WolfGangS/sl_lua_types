@@ -1,14 +1,14 @@
 [
     {
-        "key": [ "global", "props", "ll", "props", "TakeControls", "signatures", 0, "args", 1, "type" ],
-        "value": [ "boolean" ]
+        "key": [ "global", "props", "ll", "props", "TakeControls", "signatures", 0, "args", 1, "type", 0, "value" ],
+        "value": "boolean"
     },
     {
-        "key": [ "global", "props", "ll", "props", "TakeControls", "signatures", 0, "args", 2, "type" ],
-        "value": [ "boolean" ]
+        "key": [ "global", "props", "ll", "props", "TakeControls", "signatures", 0, "args", 2, "type", 0, "value" ],
+        "value": "boolean"
     },
     {
-        "key": [ "global", "props", "NULL_KEY", "type" ],
+        "key": [ "global", "props", "NULL_KEY", "type", "value" ],
         "value": "uuid"
     }
 ]

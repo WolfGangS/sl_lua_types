@@ -7,9 +7,12 @@ import {
   SLuaFuncSig,
   SLuaGlobalTable,
   SLuaGlobalTableProps,
+  SLuaSimpleType,
+  SLuaTypeDef,
   VarOpType,
 } from "./slua-json-gen.ts";
-import { isTypeCustom, isTypeValue } from "./slua-common.ts";
+import { isTypeCustom, isTypeFunction, isTypeValue } from "./slua-common.ts";
+import { StrObj } from "../types.d.ts";
 
 type SeleneDef = SelenePropDef | SeleneFuncDef;
 
@@ -58,12 +61,13 @@ export async function buildSluaSelene(
     globals: {},
   };
 
-  outputSluaGlobals(data.global.props, selene.globals);
+  outputSluaGlobals(data.global.props, data.types, selene.globals);
   return stringify(selene);
 }
 
 function outputSluaGlobals(
   data: SLuaGlobalTableProps,
+  types: StrObj<SLuaTypeDef>,
   selene: SeleneGlobals,
   section: string = "",
 ): void {
@@ -74,7 +78,7 @@ function outputSluaGlobals(
         break;
       }
       case "const": {
-        outputSluaConst(entry as SLuaConstDef, selene, section);
+        outputSluaConst(entry as SLuaConstDef, types, selene, section);
         break;
       }
       case "func": {
@@ -86,7 +90,12 @@ function outputSluaGlobals(
         selene[`${section}${table.name}`] = {
           property: section == "" ? "full-write" : "read-only",
         };
-        outputSluaGlobals(table.props, selene, `${section}${table.name}.`);
+        outputSluaGlobals(
+          table.props,
+          types,
+          selene,
+          `${section}${table.name}.`,
+        );
         break;
       }
       case "event":
@@ -98,12 +107,39 @@ function outputSluaGlobals(
   }
 }
 
+function outputSluaTypes(
+  types: StrObj<SLuaTypeDef>,
+  selene: SeleneGlobals,
+  section: string = "",
+) {
+  for (const key in types) {
+    const type = types[key];
+    if (typeof (type.type) == "string") continue;
+    const funcs = type.type.funcs;
+    for (const fKey in funcs) {
+      const func = funcs[fKey];
+      outputSluaFunc(func, selene, `${section}${type.name}.`);
+    }
+  }
+}
+
 function outputSluaConst(
   con: SLuaConstDef,
-  globals: SeleneGlobals,
+  types: StrObj<SLuaTypeDef>,
+  selene: SeleneGlobals,
   section: string,
 ) {
-  globals[`${section}${con.name}`] = { property: "read-only" };
+  selene[`${section}${con.name}`] = { property: "read-only" };
+  if (con.type.def != "custom" && con.type.def != "simple") return;
+  const typeName = con.type.value;
+  if (!types[typeName]) return;
+  const type = types[typeName];
+  if (typeof (type.type) == "string") return;
+  const funcs = type.type.funcs;
+  for (const fKey in funcs) {
+    const func = funcs[fKey];
+    outputSluaFunc(func, selene, `${section}${con.name}.`);
+  }
 }
 
 function outputSluaFunc(
@@ -131,7 +167,7 @@ function castVarOpToSelene(
     if (vtype.variadic) args.push("...");
     else {
       for (const type of vtype.type) {
-        args.push(remapLSLArgType(type));
+        args.push(remapSLuaArgType(type));
       }
     }
   }
@@ -184,46 +220,55 @@ function buildFuncArgs(signatures: SLuaFuncSig[]): SeleneArgDef[] {
   return args;
 }
 
-function remapLSLArgType(
+function remapSLuaArgType(
   type: SLuaBaseType,
 ): SeleneArgDefType {
   if (type) {
-    switch (type) {
-      case "any":
-      case "number":
-      case "string":
-      case "nil":
-        return type;
-      case "{}":
-        return "table";
-      case "integer":
-        return "number";
-      case "list":
-        return "table";
-      case "uuid":
-        return "string";
-      case "boolean":
-        return "bool";
-      case "quaternion":
-        return { display: "Quaternion" };
-      case "()":
-        return "nil";
-      case "self":
-        return "any";
-      default:
-        if (typeof type == "string") {
-          return { display: type };
-        } else if (isTypeCustom(type)) {
-          return { display: type.custom };
-        } else if (isTypeValue(type)) {
-          if (type.value === "true" || type.value === "false") {
-            return "bool";
-          }
-          return { display: type.value };
-        } else {
-          throw new Error("Unhandled Type");
+    switch (type.def) {
+      case "simple":
+        return remapSimpleSLuaArgType(type);
+      case "value":
+      case "custom":
+        if (type.value === "true" || type.value === "false") {
+          return "bool";
         }
+        return { display: type.value.toString() };
+      case "function":
+        return "function";
+      default:
+        console.error(type);
+        throw new Error("Unhandled Type");
     }
   }
   return "nil";
+}
+
+function remapSimpleSLuaArgType(type: SLuaSimpleType): SeleneArgDefType {
+  switch (type.value) {
+    case "any":
+    case "number":
+    case "string":
+    case "nil":
+      return type.value;
+    case "{}":
+      return "table";
+    case "list":
+      return "table";
+    case "uuid":
+      return "string";
+    case "boolean":
+      return "bool";
+    case "quaternion":
+      return { display: "Quaternion" };
+    case "vector":
+    case "buffer":
+      return { display: type.value };
+    case "()":
+      return "nil";
+    case "self":
+      return "any";
+    default:
+      console.error(type);
+      throw new Error("Unhandled Simple Type");
+  }
 }
