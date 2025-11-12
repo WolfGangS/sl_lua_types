@@ -1,5 +1,6 @@
 import {
     buildSluaJson,
+    SLua,
     //   SLuaClassDef,
     SLuaConstDef,
     SLuaFuncDef,
@@ -57,7 +58,7 @@ export async function buildSluaDocs(
         },
     };
 
-    outputGlobals(data.global.props, docs);
+    outputGlobals(data.global.props, docs, [], data);
     //   outputClasses(data.classes, docs);
 
     return docs;
@@ -95,6 +96,7 @@ function outputGlobals(
     data: SLuaGlobalTableProps,
     docs: Docs,
     section: string[] = [],
+    slua: SLua,
 ) {
     for (const key in data) {
         const entry = data[key];
@@ -106,13 +108,18 @@ function outputGlobals(
                 break;
             }
             case "func": {
-                outputFuncDoc(entry as SLuaFuncDef, docs, section);
+                outputFuncDoc(entry as SLuaFuncDef, docs, section, slua);
                 break;
             }
             case "table": {
                 const table = entry as SLuaGlobalTable;
                 outputTable(`${section}${table.name}`, docs);
-                outputGlobals(table.props, docs, [...section, table.name]);
+                outputGlobals(
+                    table.props,
+                    docs,
+                    [...section, table.name],
+                    slua,
+                );
                 break;
             }
             default:
@@ -126,17 +133,6 @@ function outputTable(name: string, docs: Docs) {
     if (name == "ll") return;
     docs[`${prefix}/global/${name}`] = {
         documentation: `Global table ${name}`,
-    };
-}
-
-function outputEventDoc(
-    event: SLuaEventDef,
-    docs: Docs,
-    section: string[] = [],
-) {
-    docs[`${prefix}/global/${[...section, event.name].join(".")}`] = {
-        documentation: event.desc || "n./a",
-        learn_more_link: event.link,
     };
 }
 
@@ -157,12 +153,16 @@ function outputFuncDoc(
     func: SLuaFuncDef,
     docs: Docs,
     section: string[] = [],
+    slua: SLua,
 ) {
+    const doc: Doc = {
+        documentation: func.desc || "n./a",
+        code_sample: generateCodeSample(section, func, 0, slua),
+    };
+    if (func.link) {
+        doc.learn_more_link = func.link;
+    }
     docs[
         `${prefix}/global/${[...section, func.name].join(".")}`
-    ] = {
-        documentation: func.desc || "n./a",
-        learn_more_link: func.link,
-        code_sample: generateCodeSample(section, func, 0),
-    };
+    ] = doc;
 }

@@ -1,6 +1,5 @@
 import { ensureDir } from "@std/fs";
 import * as path from "@std/path";
-// @deno-types="npm:@types/ejs"
 import ejs from "ejs";
 import {
     buildSluaJson,
@@ -106,16 +105,16 @@ export async function generateSLuaMarkdown(
     await ensureDir(path.join(...output_dir));
     await ensureDir(path.join(...html_dir));
 
-    await generateTableProps([], slua.global);
+    await generateTableProps([], slua.global, slua);
 
     await generateTableProps([], {
         def: "table",
         name: "slua",
         props: { ...slua.classes },
-    });
+    }, slua);
     await generateTable([], slua.global, "index.md", "index", {
         ...slua.classes,
-    }, true);
+    }, slua);
 
     const index = await Deno.readTextFile(
         path.join("docs", "custom", "index.md"),
@@ -179,11 +178,16 @@ async function ejsRenderFile(
     );
 }
 
-async function generateTableProps(section: string[], table: SLuaGlobalTable) {
+async function generateTableProps(
+    section: string[],
+    table: SLuaGlobalTable,
+    slua: SLua,
+) {
     for (const sub in table.props) {
         await generateGlobal(
             [...section],
             table.props[sub],
+            slua,
         );
     }
 }
@@ -191,35 +195,41 @@ async function generateTableProps(section: string[], table: SLuaGlobalTable) {
 async function generateGlobal(
     section: string[],
     global: SLuaDef | SLuaGlobalTable,
+    slua: SLua,
 ) {
     switch (global.def) {
         case "table":
-            await generateTable([...section], global);
-            await generateTableProps([...section, global.name], global);
+            await generateRegularTable([...section], global, slua);
+            await generateTableProps([...section, global.name], global, slua);
             break;
         case "class":
-            await generateClass([...section], global);
+            await generateClass([...section], global, slua);
             await generateTableProps([...section, global.name], {
                 def: "table",
                 name: global.name,
                 props: global.props,
-            });
+            }, slua);
             await generateTableProps([...section, global.name], {
                 def: "table",
                 name: global.name,
                 props: global.funcs,
-            });
+            }, slua);
             break;
         case "func":
             await generateFunction(
                 [...section],
                 global,
+                slua,
             );
             break;
     }
 }
 
-async function generateClass(section: string[], cls: SLuaClassDef) {
+async function generateClass(
+    section: string[],
+    cls: SLuaClassDef,
+    _slua: SLua,
+) {
     const name = [...section, cls.name].join(".");
 
     const fileName = `${name}`;
@@ -254,12 +264,13 @@ async function generateClass(section: string[], cls: SLuaClassDef) {
 async function generateFunction(
     section: string[],
     func: SLuaFuncDef,
+    slua: SLua,
 ) {
     const name = [...section, func.name].join(".");
 
     const fileName = `${name}`;
 
-    const [sample, _sig] = generatePreferedCodeSample(section, func);
+    const [sample, _sig] = generatePreferedCodeSample(section, func, slua);
 
     const externalLinks: StrObj<string> = {};
 
@@ -297,13 +308,21 @@ async function generateFunction(
     );
 }
 
+async function generateRegularTable(
+    section: string[],
+    table: SLuaGlobalTable,
+    slua: SLua,
+) {
+    await generateTable(section, table, "table.md", null, {}, slua);
+}
+
 async function generateTable(
     section: string[],
     table: SLuaGlobalTable | SLuaGlobal,
-    template: string | null = null,
+    template: string = "table.md",
     fileName: string | null = null,
-    extra: SLuaGlobalTableProps = {},
-    valueSort: boolean = false,
+    extra: SLuaGlobalTableProps,
+    _slua: SLua,
 ) {
     const name = [...section, table.name];
 
@@ -349,7 +368,7 @@ async function generateTable(
         },
     };
     const out = await ejsRenderFile(
-        path.join(templatePath, template ?? "table.md"),
+        path.join(templatePath, template),
         data,
         {},
     );

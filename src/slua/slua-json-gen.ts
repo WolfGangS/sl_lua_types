@@ -157,6 +157,9 @@ const newSimpleType = (
 const newValueType = (t: string): SLuaValueType => {
     return { def: "value", value: t };
 };
+const newFuncType = (t: SLuaFuncSig): SLuaFunctionType => {
+    return { def: "function", value: t };
+};
 const newValueTypeArray = (t: string[]): SLuaValueType[] => {
     return t.map(newValueType);
 };
@@ -1344,7 +1347,27 @@ function buildSLuaTimersProto(): SLuaClassDef {
                         EventHandler,
                         [
                             newArg("seconds", "interval in seconds", "number"),
-                            newArg("handler", "handler function", EventHandler),
+                            newArg(
+                                "handler",
+                                "handler function",
+                                newFuncType(
+                                    newSFuncSignature(
+                                        "()",
+                                        [
+                                            newArg(
+                                                "scheduledTime",
+                                                "The time the timer was meant to fire, see `ll.GetTime`",
+                                                "number",
+                                            ),
+                                            newArg(
+                                                "delay",
+                                                "The interval specified for this timer",
+                                                "number",
+                                            ),
+                                        ],
+                                    ),
+                                ),
+                            ),
                         ],
                     ),
                 ],
@@ -1359,7 +1382,22 @@ function buildSLuaTimersProto(): SLuaClassDef {
                         EventHandler,
                         [
                             newArg("seconds", "delay in seconds", "number"),
-                            newArg("handler", "handler function", EventHandler),
+                            newArg(
+                                "handler",
+                                "handler function",
+                                newFuncType(
+                                    newSFuncSignature(
+                                        "()",
+                                        [
+                                            newArg(
+                                                "scheduledTime",
+                                                "The time the timer was meant to fire, use `ll.GetTime` to calculate delta",
+                                                "number",
+                                            ),
+                                        ],
+                                    ),
+                                ),
+                            ),
                         ],
                     ),
                 ],

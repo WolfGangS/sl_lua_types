@@ -1,6 +1,11 @@
 ## <% if (section.name){ %>[<%=section.name%>](<%=section.url%>).<%}%><%=func.name%>
+<% if(definitions.length > 1) {%>
+### `<% if (section.name){ %><%=section.name%>.<%}%><%=func.name%>`
 <% for(const definition of definitions) {%>
- - <% if (section.name){ %><%=section.name%>.<%}%><%=func.name%><%-definition%>
+ - `<%-definition%>`
+<% } %>
+<% } else { %>
+### `<% if (section.name){ %><%=section.name%>.<%}%><%=func.name%>` `<%-definitions[0]%>`
 <% } %>
 
 <%=func.desc%>

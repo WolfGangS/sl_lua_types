@@ -1,5 +1,6 @@
 import {
     NamedVarOpType,
+    SLua,
     SLuaBaseType,
     SLuaClassDef,
     SLuaCustomType,
@@ -177,11 +178,13 @@ export function isSimpleTypeValue(s: string): s is SLuaSimpleTypeValue {
 export function generatePreferedCodeSample(
     prefix: string[],
     func: SLuaFuncDef,
+    slua: SLua,
 ): [string, number] {
     let str = generateCodeSample(
         prefix,
         func,
         0,
+        slua,
         0,
         func.signatures[0].args.length > 3,
     );
@@ -193,6 +196,7 @@ export function generatePreferedCodeSample(
                 prefix,
                 func,
                 i,
+                slua,
                 o,
                 func.signatures[i].args.length > 3,
             );
@@ -211,6 +215,7 @@ export function generateCodeSample(
     prefix: string[],
     func: SLuaFuncDef,
     sigIndex: number,
+    slua: SLua,
     off: number = 0,
     verbose: boolean = false,
 ): string {
@@ -221,6 +226,7 @@ export function generateCodeSample(
         off,
         verbose,
         func.takesSelf,
+        slua,
     );
 }
 
@@ -236,8 +242,14 @@ function generateCodeSampleForSig(
     off: number = 0,
     verbose: boolean = false,
     takesSelf: boolean = false,
+    slua: SLua,
 ): string {
-    const [args, funcs] = buildCodeSampleArgsForSig(sig.args, off, verbose);
+    const [args, funcs] = buildCodeSampleArgsForSig(
+        sig.args,
+        off,
+        verbose,
+        slua,
+    );
     if (takesSelf) args.shift();
     const prefix = funcs.length > 0 ? funcs.join("\n\n") + "\n\n" : "";
     if (verbose) {
@@ -251,13 +263,47 @@ function buildCodeSampleArgsForSig(
     fargs: SLuaFuncArgs,
     off: number,
     verbose: boolean = false,
+    slua: SLua,
 ): [string[], string[]] {
     const args: (string | null)[] = [];
     const funcs: string[] = [];
     for (const arg of fargs) {
         const type = cleanType(arg.type, off);
         switch (type.def) {
-            case "custom":
+            case "custom": {
+                const custom = slua.types[type.value];
+                if (custom) {
+                    let ctype = custom.type;
+                    if (ctype instanceof Array) {
+                        ctype = ctype[0];
+                    }
+                    switch (ctype.def) {
+                        case "simple":
+                            args.push(
+                                buildCodeSampleSimpleArgForSig(ctype, verbose),
+                            );
+                            break;
+                        case "value":
+                            args.push(ctype.value.toString());
+                            break;
+                        case "function":
+                            funcs.push(
+                                generateCodeSampleForFunction(
+                                    ctype.value,
+                                    arg.name,
+                                ),
+                            );
+                            args.push(arg.name);
+                            break;
+                        default:
+                            args.push(type.value.toString());
+                            break;
+                    }
+                } else {
+                    args.push(type.value.toString());
+                }
+                break;
+            }
             case "value":
                 args.push(type.value.toString());
                 break;
@@ -317,6 +363,10 @@ function generateCodeSampleForFunction(
     let result = "";
     if (name) {
         result += `local ${name} = `;
+    }
+    sig = JSON.parse(JSON.stringify(sig));
+    for (const arg of sig.args) {
+        if (!arg.name) arg.name = "arg";
     }
     return `${result}function(${
         mapArgsToFunctionParamString(sig.args, true)
