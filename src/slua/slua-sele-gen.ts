@@ -1,7 +1,7 @@
 import { stringify } from "@std/yaml";
 import {
     buildSluaJson,
-    SLua,
+    // SLua,
     SLuaBaseType,
     SLuaConstDef,
     SLuaCustomType,
@@ -14,14 +14,22 @@ import {
     SLuaTypeDef,
     VarOpType,
 } from "./slua-json-gen.ts";
-import { isTypeCustom, isTypeFunction, isTypeValue } from "./slua-common.ts";
+// import { isTypeCustom, isTypeFunction, isTypeValue } from "./slua-common.ts";
 import { StrObj } from "../types.d.ts";
 import { LSLDef } from "../xml/xml-lsl-json-gen.ts";
 
-type SeleneDef = SelenePropDef | SeleneFuncDef | SeleneStructDef;
+type SeleneDef =
+    | SelenePropDef
+    | SeleneFuncDef
+    | SeleneStructDef
+    | SeleneRemovedDef;
 
 type SelenePropDef = {
     property: "read-only" | "new-fields" | "override-fields" | "full-write";
+};
+
+type SeleneRemovedDef = {
+    removed: true;
 };
 
 type SeleneStructDef = {
@@ -81,7 +89,17 @@ export async function buildSluaSelene(
     const selene: Selene = {
         base: "luau",
         name: "sl_selene_defs",
-        globals: {},
+        globals: {
+            "getfenv": {
+                removed: true,
+            },
+            "setfenv": {
+                removed: true,
+            },
+            "loadstring": {
+                removed: true,
+            },
+        },
         structs: {},
     };
 
@@ -102,13 +120,13 @@ function outputSluaStructs(
         const struct: SeleneStruct = {};
         for (const fName in cls.funcs) {
             const func = cls.funcs[fName];
-            console.error("=============", fName, "=============");
+            // console.error("=============", fName, "=============");
             const sFunc: SeleneStructFunc = {
                 method: true,
                 must_use: func.must_use,
                 args: buildFuncArgs(func.signatures, types, true),
             };
-            console.error("=============", "       ", "=============");
+            // console.error("=============", "       ", "=============");
             struct[fName] = sFunc;
         }
         structs[name] = struct;
@@ -242,9 +260,9 @@ function castVarOpToSelene(
             args = [...args, ...castSluaArgTypesToSelene(vtype.type, types)];
         }
     }
-    console.error("----------------------------------------");
-    console.error(args);
-    console.error("----------------------------------------");
+    // console.error("----------------------------------------");
+    // console.error(args);
+    // console.error("----------------------------------------");
 
     if (isStringArrayArray(args)) {
         args = args.flat();
