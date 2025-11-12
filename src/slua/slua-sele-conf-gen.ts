@@ -1,54 +1,48 @@
-import { stringify } from "jsr:@std/toml";
-import { buildSluaJson } from "./slua-json-gen.ts";
+import { stringify } from "@std/toml";
+import { LSLDef } from "../xml/xml-lsl-json-gen.ts";
+// import { buildSluaJson } from "./slua-json-gen.ts";
 
 type SeleneConfig = {
-  std: string;
+    std: string;
 
-  rules: {
-    global_usage: string;
-    shadowing: string;
-    must_use: string;
-  };
-
-  config: {
-    empty_if: {
-      comments_count: boolean;
+    rules: {
+        global_usage: string;
+        shadowing: string;
+        must_use: string;
     };
 
-    unused_variable: {
-      ignore_pattern: string;
+    config: {
+        empty_if: {
+            comments_count: boolean;
+        };
+
+        unused_variable?: {
+            ignore_pattern: string;
+        };
     };
-  };
 };
 
+// deno-lint-ignore require-await
 export async function buildSluaSeleneConfig(
-  file: string,
-  strict: boolean = true,
+    _lsl: LSLDef,
+    _strict: boolean = true,
 ): Promise<string> {
-  const data = await buildSluaJson(file, strict);
+    const seleneConfig: SeleneConfig = {
+        std: "sl_selene_defs",
+        rules: {
+            global_usage: "allow",
+            shadowing: "allow",
+            must_use: "warn",
+        },
+        config: {
+            empty_if: {
+                comments_count: true,
+            },
+            // unused_variable: {
+            //   ignore_pattern: ignorePattern,
+            // },
+        },
+    };
 
-  const eventNames = Object.entries(data.global.props)
-    .filter(([_, prop]) => prop.def === "event")
-    .map(([name]) => name);
-
-  const ignorePattern = eventNames.map((name) => `^${name}$`).join("|");
-
-  const seleneConfig: SeleneConfig = {
-    std: "sl_selene_defs",
-    rules: {
-      global_usage: "allow",
-      shadowing: "allow",
-      must_use: "warn",
-    },
-    config: {
-      empty_if: {
-        comments_count: true,
-      },
-      unused_variable: {
-        ignore_pattern: ignorePattern,
-      },
-    },
-  };
-
-  return stringify(seleneConfig);
+    return stringify(seleneConfig);
 }

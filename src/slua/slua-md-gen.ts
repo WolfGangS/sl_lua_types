@@ -1,7 +1,7 @@
-import { ensureDir } from "jsr:@std/fs";
-import * as path from "jsr:@std/path";
+import { ensureDir } from "@std/fs";
+import * as path from "@std/path";
 // @deno-types="npm:@types/ejs"
-import ejs from "npm:ejs";
+import ejs from "ejs";
 import {
     buildSluaJson,
     SLua,
@@ -22,6 +22,7 @@ import {
 // import { create as markdown } from "npm:markdown-to-html-cli";
 import { generate as markdown } from "../markdown-2-html.ts";
 import { StrObj } from "../types.d.ts";
+import { LSLDef } from "../xml/xml-lsl-json-gen.ts";
 
 const import_dirname = import.meta.dirname;
 
@@ -91,11 +92,11 @@ let output_dir: string[] = [];
 let html_dir: string[] = [];
 
 export async function generateSLuaMarkdown(
-    keywords: string,
+    lsl: LSLDef,
     outputDir: string,
     htmlDir: string,
 ): Promise<void> {
-    const slua = await buildSluaJson(keywords);
+    const slua = await buildSluaJson(lsl);
 
     prepSlua(slua);
 

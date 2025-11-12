@@ -7,6 +7,7 @@ import {
     SLuaFuncSig,
     SLuaGlobalTable,
     SLuaGlobalTableProps,
+    SLuaJsonOptions,
     SLuaTableType,
     SLuaTypeDef,
 } from "./slua-json-gen.ts";
@@ -16,12 +17,13 @@ import {
     mapResultToFunctionString,
     mapSLuaTypeToString,
 } from "./slua-common.ts";
+import { LSLDef } from "../xml/xml-lsl-json-gen.ts";
 
 export async function buildSluaTypeDefs(
-    file: string,
-    strict: boolean = true,
+    lsl: LSLDef,
+    options: SLuaJsonOptions = {},
 ): Promise<string> {
-    const data = await buildSluaJson(file, strict);
+    const data = await buildSluaJson(lsl, options);
 
     return "\n" +
         "----------------------------------\n" +

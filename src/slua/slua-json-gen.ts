@@ -1,4 +1,4 @@
-import { buildLSLJson, LSLDef } from "../lsl/lsl-json-gen.ts";
+import { buildLSLJsonFromXML, LSLDef } from "../xml/xml-lsl-json-gen.ts";
 import {
     ConstDef,
     ConstDefs,
@@ -194,12 +194,18 @@ const castTypeArray = (t: (string | SLuaBaseType)[]): SLuaBaseType[] => {
 const EventHandler = newCustomType("EventHandler");
 const DetectedEventHandler = newCustomType("DetectedEventHandler");
 
+export type SLuaJsonOptions = {
+    strict?: boolean;
+    includPrivate?: boolean;
+};
+
+// deno-lint-ignore require-await
 export async function buildSluaJson(
-    file: string,
-    strict: boolean = true,
+    lsl: LSLDef,
+    options: SLuaJsonOptions = {},
 ): Promise<SLua> {
+    const strict = options.strict ?? true;
     if (!strict) remapLSLArgType = remapLSLArgTypeLoose;
-    const lsl = await buildLSLJson(file);
     const slua: SLua = {
         global: {
             def: "table",
@@ -225,7 +231,7 @@ export async function buildSluaJson(
                 },
                 ...builtInSluaFuncs(),
                 ...builtInSluaTables(),
-                ...buildSLuaGlobalsFromLSL(lsl),
+                ...buildSLuaGlobalsFromLSL(lsl, options.includPrivate ?? false),
                 ...buildSLuaConstsFromLSL(lsl.constants),
             },
         },
@@ -238,7 +244,7 @@ export async function buildSluaJson(
     return slua;
 }
 
-function newFuncImpureSelf(
+function newFuncEffectSelf(
     name: string,
     desc: string,
     link: string | null,
@@ -246,18 +252,18 @@ function newFuncImpureSelf(
     self: string,
 ): SLuaFuncDef {
     const func = newFuncSelf(name, desc, link, results, self);
-    func.pure = false;
+    func.must_use = false;
     return func;
 }
 
-function newFuncImpure(
+function newFuncEffect(
     name: string,
     desc: string,
     link: string | null,
     results: SLuaFuncSig[] = [],
 ): SLuaFuncDef {
     const func = newFunc(name, desc, link, results);
-    func.pure = false;
+    func.must_use = false;
     return func;
 }
 
@@ -287,12 +293,13 @@ function newFunc(
         def: "func",
         name,
         energy: 0,
-        pure: true,
+        must_use: true,
         sleep: 0,
         signatures: results,
         desc,
         link,
         takesSelf: false,
+        private: false,
     };
 }
 
@@ -1328,7 +1335,7 @@ function buildSLuaTimersProto(): SLuaClassDef {
         def: "class",
         name: "LLTimersProto",
         funcs: {
-            every: newFuncImpureSelf(
+            every: newFuncEffectSelf(
                 "every",
                 "Start a timer that ticks at defined interval",
                 null,
@@ -1343,7 +1350,7 @@ function buildSLuaTimersProto(): SLuaClassDef {
                 ],
                 "LLTimersProto",
             ),
-            once: newFuncImpureSelf(
+            once: newFuncEffectSelf(
                 "once",
                 "Execute a function once after a defined delay",
                 null,
@@ -1358,7 +1365,7 @@ function buildSLuaTimersProto(): SLuaClassDef {
                 ],
                 "LLTimersProto",
             ),
-            off: newFuncImpureSelf(
+            off: newFuncEffectSelf(
                 "off",
                 "Cancel a timer or delay",
                 null,
@@ -1776,7 +1783,7 @@ function buildSLuaEventsFromLSL(lslEvents: EventDefs): SLuaClassDef {
         "LLEventsProto",
     );
 
-    funcs.on = newFuncImpureSelf(
+    funcs.on = newFuncEffectSelf(
         "on",
         "Method for hooking event by name",
         null,
@@ -1814,7 +1821,7 @@ function buildSLuaEventsFromLSL(lslEvents: EventDefs): SLuaClassDef {
         ],
         "LLEventsProto",
     );
-    funcs.off = newFuncImpureSelf(
+    funcs.off = newFuncEffectSelf(
         "off",
         "Clear a event handler",
         null,
@@ -1853,17 +1860,24 @@ function buildSLuaEventsFromLSL(lslEvents: EventDefs): SLuaClassDef {
     };
 }
 
-function buildSLuaGlobalsFromLSL(lsl: LSLDef): SLuaGlobal {
+function buildSLuaGlobalsFromLSL(
+    lsl: LSLDef,
+    includePrivate: boolean = false,
+): SLuaGlobal {
     const global: SLuaGlobal = {
-        ll: buildSLuaLLFuncsFromLSL(lsl.functions),
+        ll: buildSLuaLLFuncsFromLSL(lsl.functions, includePrivate),
     };
     return global;
 }
 
-function buildSLuaLLFuncsFromLSL(lslFuncs: FuncDefs): SLuaGlobalTable {
+function buildSLuaLLFuncsFromLSL(
+    lslFuncs: FuncDefs,
+    includePrivate: boolean = false,
+): SLuaGlobalTable {
     const props: SLuaGlobalTableProps = {};
     for (const key in lslFuncs) {
         const { name, result, args, ...lslFunc } = lslFuncs[key];
+        if (lslFunc.private && !includePrivate) continue;
         const func: SLuaFuncDef = {
             ...lslFunc,
             takesSelf: false,
