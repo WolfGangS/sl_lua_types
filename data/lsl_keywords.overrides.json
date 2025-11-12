@@ -2,5 +2,145 @@
     {
         "key": [ "functions", "llRezObjectWithParams", "args", 1, "name" ],
         "value": "Params"
+    },
+    {
+        "key": [ "functions", "llOpenFloater", "linden-experience" ],
+        "value": true
+    },
+    {
+        "key": [ "functions", "llAddToLandBanList", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llAddToLandPassList", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llAdjustSoundVolume", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llCreateLink", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llGetNotecardLine", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llGetNumberOfNotecardLines", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llGetPrimitiveParams", "sleep" ],
+        "value": 0.2
+    },
+    {
+        "key": [ "functions", "llLoadURL", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llMakeExplosion", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llMakeFire", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llMakeFountain", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llMakeSmoke", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llOffsetTexture", "sleep" ],
+        "value": 0.2
+    },
+    {
+        "key": [ "functions", "llRemoveFromLandBanList", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llRemoveFromLandPassList", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llRequestAgentData", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llResetLandBanList", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llResetLandPassList", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llRezAtRoot", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llRezObject", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llRezObjectWithParams", "sleep" ],
+        "value": 0.1
+    },
+    {
+        "key": [ "functions", "llRotateTexture", "sleep" ],
+        "value": 0.2
+    },
+    {
+        "key": [ "functions", "llScaleTexture", "sleep" ],
+        "value": 0.2
+    },
+    {
+        "key": [ "functions", "llSetLinkPrimitiveParams", "sleep" ],
+        "value": 0.2
+    },
+    {
+        "key": [ "functions", "llSetLinkRenderMaterial", "sleep" ],
+        "value": 0.2
+    },
+    {
+        "key": [ "functions", "llSetLinkTexture", "sleep" ],
+        "value": 0.2
+    },
+    {
+        "key": [ "functions", "llSetLocalRot", "sleep" ],
+        "value": 0.2
+    },
+    {
+        "key": [ "functions", "llSetPos", "sleep" ],
+        "value": 0.2
+    },
+    {
+        "key": [ "functions", "llSetPrimitiveParams", "sleep" ],
+        "value": 0.2
+    },
+    {
+        "key": [ "functions", "llSetRemoteScriptAccessPin", "sleep" ],
+        "value": 0.2
+    },
+    {
+        "key": [ "functions", "llSetRenderMaterial", "sleep" ],
+        "value": 0.2
+    },
+    {
+        "key": [ "functions", "llSetRot", "sleep" ],
+        "value": 0.2
+    },
+    {
+        "key": [ "functions", "llSetTexture", "sleep" ],
+        "value": 0.2
+    },
+    {
+        "key": [ "functions", "llXorBase64Strings", "sleep" ],
+        "value": 0.3
     }
 ]

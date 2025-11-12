@@ -1,0 +1,9 @@
+<% if(funcs.length) { %>
+<% if(funcs.length > 19) {%>|||||
+|---|---|---|---|<%let i = 0; for(const func of funcs) { %><% if(!(i % 4)){%>
+|<%}%>[<%= func.name %>](functions/<%=parentName%><%=func.name%>.html)|<% i++; }%>
+<% } else { %>
+|Name|Description|
+|----|----|<%for(const func of funcs) {%>
+|[<%= func.name %>](functions/<%=parentName%><%=func.name%>.html)|<%-func.desc.replaceAll("\n","<br>")%>|<% } %>
+<% } } %>

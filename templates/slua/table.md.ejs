@@ -6,15 +6,11 @@
 ### Structure
 <%- include("./_props.md.ejs", {section, name: table.name, props, table:false});  %>
 
-<% if(funcs.length) { %>#### Functions
-<% if(funcs.length > 19) {%>|||||
-|---|---|---|---|<%let i = 0; for(const func of funcs) { %><% if(!(i % 4)){%>
-|<%}%>[<%= func.name %>](functions/<%=table.name%>.<%=func.name%>.html)|<% i++; }%>
-<% } else { %>
-|Name|Description|
-|----|----|<%for(const func of funcs) {%>
-|[<%= func.name %>](functions/<%=table.name%>.<%=func.name%>.html)|<%-func.desc.replaceAll("\n","<br>")%>|<% } %>
-<% } } %>
+<% if(funcs.length || selfFuncs.length) { %> #### Functions
+<%- include("./_funcs.md.ejs", {parentName:`${table.name}.`, funcs: selfFuncs}); %>
+<%- include("./_funcs.md.ejs", {parentName:`${table.name}.`, funcs}); %>
+<% } %>
+
 <% if (section.name){ %>
 [< Back to `<%=section.name%>`](<%=section.url%>)
 <%} else {%>

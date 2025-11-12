@@ -81,6 +81,8 @@
          </map>
          <key>quaternion</key>
          <map>
+            <key>private</key>
+            <boolean>true</boolean>
             <key>tooltip</key>
             <string>The quaternion type is a left over from way back when LSL was created. It was
                later renamed to &lt;rotation&gt; to make it more user friendly, but it appears
@@ -1844,6 +1846,15 @@
             <key>type</key>
             <string>integer</string>
          </map>
+         <key>DATA_RESERVED_0</key>
+         <map>
+            <key>tooltip</key>
+            <string>Reserved for Linden use.</string>
+            <key>value</key>
+            <string>9</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
          <key>DATA_SIM_POS</key>
          <map>
             <key>tooltip</key>
@@ -1917,6 +1928,15 @@
             <string>The object is made temporary and will be cleaned up at some later timer.</string>
             <key>value</key>
             <string>1</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
+         <key>DEREZ_TO_INVENTORY</key>
+         <map>
+            <key>tooltip</key>
+            <string>The object is returned to the inventory of the rezzer.</string>
+            <key>value</key>
+            <string>2</string>
             <key>type</key>
             <string>integer</string>
          </map>
@@ -3995,6 +4015,78 @@
             <key>type</key>
             <string>integer</string>
          </map>
+         <key>OVERRIDE_GLTF_BASE_ALPHA</key>
+         <map>
+            <key>tooltip</key>
+            <string></string>
+            <key>value</key>
+            <string>2</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
+         <key>OVERRIDE_GLTF_BASE_ALPHA_MASK</key>
+         <map>
+            <key>tooltip</key>
+            <string></string>
+            <key>value</key>
+            <string>4</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
+         <key>OVERRIDE_GLTF_BASE_ALPHA_MODE</key>
+         <map>
+            <key>tooltip</key>
+            <string></string>
+            <key>value</key>
+            <string>3</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
+         <key>OVERRIDE_GLTF_BASE_COLOR_FACTOR</key>
+         <map>
+            <key>tooltip</key>
+            <string></string>
+            <key>value</key>
+            <string>1</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
+         <key>OVERRIDE_GLTF_BASE_DOUBLE_SIDED</key>
+         <map>
+            <key>tooltip</key>
+            <string></string>
+            <key>value</key>
+            <string>5</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
+         <key>OVERRIDE_GLTF_EMISSIVE_FACTOR</key>
+         <map>
+            <key>tooltip</key>
+            <string></string>
+            <key>value</key>
+            <string>8</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
+         <key>OVERRIDE_GLTF_METALLIC_FACTOR</key>
+         <map>
+            <key>tooltip</key>
+            <string></string>
+            <key>value</key>
+            <string>6</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
+         <key>OVERRIDE_GLTF_ROUGHNESS_FACTOR</key>
+         <map>
+            <key>tooltip</key>
+            <string></string>
+            <key>value</key>
+            <string>7</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
          <key>PARCEL_COUNT_GROUP</key>
          <map>
             <key>tooltip</key>
@@ -4442,6 +4534,87 @@
             <string></string>
             <key>value</key>
             <string>5</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
+         <key>PARCEL_SALE_AGENT</key>
+         <map>
+            <key>tooltip</key>
+            <string>The agent authorized to purchase the parcel.</string>
+            <key>value</key>
+            <string>2</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
+         <key>PARCEL_SALE_ERROR_BAD_PARAMS</key>
+         <map>
+            <key>tooltip</key>
+            <string>The parameters provided to set the sale information are invalid.</string>
+            <key>value</key>
+            <string>5</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
+         <key>PARCEL_SALE_ERROR_INVALID_PRICE</key>
+         <map>
+            <key>tooltip</key>
+            <string>The price set for the parcel is invalid (e.g., less than or equal to 0).</string>
+            <key>value</key>
+            <string>4</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
+         <key>PARCEL_SALE_ERROR_IN_ESCROW</key>
+         <map>
+            <key>tooltip</key>
+            <string>The parcel is currently in escrow and cannot be set for sale.</string>
+            <key>value</key>
+            <string>3</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
+         <key>PARCEL_SALE_ERROR_NO_PARCEL</key>
+         <map>
+            <key>tooltip</key>
+            <string>The parcel could not be found.</string>
+            <key>value</key>
+            <string>1</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
+         <key>PARCEL_SALE_ERROR_NO_PERMISSIONS</key>
+         <map>
+            <key>tooltip</key>
+            <string>The script does not have the required permissions to set the sale information.</string>
+            <key>value</key>
+            <string>2</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
+         <key>PARCEL_SALE_OBJECTS</key>
+         <map>
+            <key>tooltip</key>
+            <string>Are the objects on the parcel included in the sale?</string>
+            <key>value</key>
+            <string>3</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
+         <key>PARCEL_SALE_OK</key>
+         <map>
+            <key>tooltip</key>
+            <string>The sale information was successfully set.</string>
+            <key>value</key>
+            <string>0</string>
+            <key>type</key>
+            <string>integer</string>
+         </map>
+         <key>PARCEL_SALE_PRICE</key>
+         <map>
+            <key>tooltip</key>
+            <string>The price of the parcel. If no authorized agent is set, must be greater than 0.</string>
+            <key>value</key>
+            <string>1</string>
             <key>type</key>
             <string>integer</string>
          </map>
@@ -4987,7 +5160,7 @@
          <key>PRIM_CLICK_ACTION</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[PRIM_CLICK_ACTION, integer CLICK_ACTION_*]</string>
             <key>value</key>
             <string>43</string>
             <key>type</key>
@@ -5005,7 +5178,10 @@
          <key>PRIM_COLOR</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[PRIM_COLOR, integer face, vector color, float alpha]
+               integer face – face number or ALL_SIDES vector color – color in RGB &lt;R, G, B&gt;
+               (&lt;0.0, 0.0, 0.0&gt; = black, &lt;1.0, 1.0, 1.0&gt; = white) float alpha – from 0.0
+               (clear) to 1.0 (solid) (0.0 &lt;= alpha &lt;= 1.0)</string>
             <key>value</key>
             <string>18</string>
             <key>type</key>
@@ -5023,7 +5199,7 @@
          <key>PRIM_DESC</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[PRIM_DESC, string description]</string>
             <key>value</key>
             <string>28</string>
             <key>type</key>
@@ -5032,7 +5208,11 @@
          <key>PRIM_FLEXIBLE</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_FLEXIBLE, integer boolean, integer softness, float gravity, float
+               friction, float wind, float tension, vector force ] + +integer boolean – TRUE
+               enables, FALSE disables +integer softness – ranges from 0 to 3 +float gravity –
+               ranges from -10.0 to 10.0 +float friction – ranges from 0.0 to 10.0 +float wind –
+               ranges from 0.0 to 10.0 +float tension – ranges from 0.0 to 10.0 +vector force</string>
             <key>value</key>
             <string>21</string>
             <key>type</key>
@@ -5041,7 +5221,7 @@
          <key>PRIM_FULLBRIGHT</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_FULLBRIGHT, integer face, integer boolean ]</string>
             <key>value</key>
             <string>20</string>
             <key>type</key>
@@ -5050,7 +5230,8 @@
          <key>PRIM_GLOW</key>
          <map>
             <key>tooltip</key>
-            <string>PRIM_GLOW is used to get or set the glow status of the face.</string>
+            <string>PRIM_GLOW is used to get or set the glow status of the face.\n[ PRIM_GLOW,
+               integer face, float intensity ]</string>
             <key>value</key>
             <string>25</string>
             <key>type</key>
@@ -5087,7 +5268,7 @@
          <map>
             <key>tooltip</key>
             <string>Prim parameter for materials using integer face, string texture, vector repeats,
-               vector offsets, float rotation_in_radians, vector color, integer alpha_mode, integer
+               vector offsets, float rotation_in_radians, vector color, integer alpha_mode, float
                alpha_cutoff, boolean double_sided.\nValid options for alpha_mode are
                PRIM_ALPHA_MODE_BLEND, _NONE, and _MASK.\nalpha_cutoff is used only for
                PRIM_ALPHA_MODE_MASK.</string>
@@ -5175,7 +5356,8 @@
          <key>PRIM_LINK_TARGET</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_LINK_TARGET, integer link_target ]
+               Used to get or set multiple links with a single PrimParameters call.</string>
             <key>value</key>
             <string>34</string>
             <key>type</key>
@@ -5184,7 +5366,7 @@
          <key>PRIM_MATERIAL</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_MATERIAL, integer PRIM_MATERIAL_* ]</string>
             <key>value</key>
             <string>2</string>
             <key>type</key>
@@ -5520,7 +5702,7 @@
          <key>PRIM_NAME</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_NAME, string name ]</string>
             <key>value</key>
             <string>27</string>
             <key>type</key>
@@ -5539,7 +5721,10 @@
          <key>PRIM_OMEGA</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_OMEGA, vector axis, float spinrate, float gain ]
+               vector axis – arbitrary axis to rotate the object around float spinrate – rate of
+               rotation in radians per second float gain – also modulates the final spinrate and
+               disables the rotation behavior if zero</string>
             <key>value</key>
             <string>32</string>
             <key>type</key>
@@ -5548,7 +5733,7 @@
          <key>PRIM_PHANTOM</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_PHANTOM, integer boolean ]</string>
             <key>value</key>
             <string>5</string>
             <key>type</key>
@@ -5557,7 +5742,7 @@
          <key>PRIM_PHYSICS</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_PHYSICS, integer boolean ]</string>
             <key>value</key>
             <string>3</string>
             <key>type</key>
@@ -5607,7 +5792,12 @@
          <key>PRIM_POINT_LIGHT</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_POINT_LIGHT, integer boolean, vector linear_color, float intensity, float
+               radius, float falloff ]
+               integer boolean – TRUE enables, FALSE disables vector linear_color – linear color in
+               RGB &lt;R, G, B&amp;&gt; (&lt;0.0, 0.0, 0.0&gt; = black, &lt;1.0, 1.0, 1.0&gt; =
+               white) float intensity – ranges from 0.0 to 1.0 float radius – ranges from 0.1 to
+               20.0 float falloff – ranges from 0.01 to 2.0</string>
             <key>value</key>
             <string>23</string>
             <key>type</key>
@@ -5616,7 +5806,9 @@
          <key>PRIM_POSITION</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_POSITION, vector position ]
+               vector position – position in region or local coordinates depending upon the
+               situation</string>
             <key>value</key>
             <string>6</string>
             <key>type</key>
@@ -5625,7 +5817,8 @@
          <key>PRIM_POS_LOCAL</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>PRIM_POS_LOCAL, vector position ]
+               vector position - position in local coordinates</string>
             <key>value</key>
             <string>33</string>
             <key>type</key>
@@ -5634,7 +5827,7 @@
          <key>PRIM_PROJECTOR</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_PROJECTOR, string texture, float fov, float focus, float ambiance ]</string>
             <key>value</key>
             <string>42</string>
             <key>type</key>
@@ -5687,7 +5880,7 @@
          <key>PRIM_RENDER_MATERIAL</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_RENDER_MATERIAL, integer face, string material ]</string>
             <key>value</key>
             <string>49</string>
             <key>type</key>
@@ -5696,7 +5889,7 @@
          <key>PRIM_ROTATION</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_ROT_LOCAL, rotation global_rot ]</string>
             <key>value</key>
             <string>8</string>
             <key>type</key>
@@ -5705,7 +5898,7 @@
          <key>PRIM_ROT_LOCAL</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_ROT_LOCAL, rotation local_rot ]</string>
             <key>value</key>
             <string>29</string>
             <key>type</key>
@@ -5850,7 +6043,7 @@
          <key>PRIM_SIT_TARGET</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_SIT_TARGET, integer boolean, vector offset, rotation rot ]</string>
             <key>value</key>
             <string>41</string>
             <key>type</key>
@@ -5859,7 +6052,7 @@
          <key>PRIM_SIZE</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_SIZE, vector size ]</string>
             <key>value</key>
             <string>7</string>
             <key>type</key>
@@ -5868,7 +6061,7 @@
          <key>PRIM_SLICE</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_SLICE, vector slice ]</string>
             <key>value</key>
             <string>35</string>
             <key>type</key>
@@ -5897,7 +6090,7 @@
          <key>PRIM_TEXGEN</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_TEXGEN, integer face, PRIM_TEXGEN_* ]</string>
             <key>value</key>
             <string>22</string>
             <key>type</key>
@@ -5924,7 +6117,7 @@
          <key>PRIM_TEXT</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_TEXT, string text, vector color, float alpha ]</string>
             <key>value</key>
             <string>26</string>
             <key>type</key>
@@ -5933,7 +6126,8 @@
          <key>PRIM_TEXTURE</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>[ PRIM_TEXTURE, integer face, string texture, vector repeats, vector offsets,
+               float rotation_in_radians ]</string>
             <key>value</key>
             <string>17</string>
             <key>type</key>
@@ -6910,6 +7104,8 @@
             <string>1</string>
             <key>type</key>
             <string>integer</string>
+            <key>deprecated</key>
+            <boolean>true</boolean>
          </map>
          <key>REMOTE_DATA_REPLY</key>
          <map>
@@ -6919,6 +7115,8 @@
             <string>3</string>
             <key>type</key>
             <string>integer</string>
+            <key>deprecated</key>
+            <boolean>true</boolean>
          </map>
          <key>REMOTE_DATA_REQUEST</key>
          <map>
@@ -6928,6 +7126,8 @@
             <string>2</string>
             <key>type</key>
             <string>integer</string>
+            <key>deprecated</key>
+            <boolean>true</boolean>
          </map>
          <key>REQUIRE_LINE_OF_SIGHT</key>
          <map>
@@ -9516,7 +9716,7 @@
          <key>experience_permissions</key>
          <map>
             <key>tooltip</key>
-            <string></string>
+            <string>Triggered when an agent has approved an experience permissions request.</string>
             <key>arguments</key>
             <array>
                <map>
@@ -10029,6 +10229,8 @@
          <map>
             <key>tooltip</key>
             <string>This event is deprecated.</string>
+            <key>deprecated</key>
+            <boolean>true</boolean>
             <key>arguments</key>
             <array>
                <map>
@@ -11067,6 +11269,8 @@
          </map>
          <key>llCloseRemoteDataChannel</key>
          <map>
+            <key>deprecated</key>
+            <boolean>true</boolean>
             <key>energy</key>
             <real>10.0</real>
             <key>sleep</key>
@@ -11090,6 +11294,8 @@
          </map>
          <key>llCloud</key>
          <map>
+            <key>deprecated</key>
+            <boolean>true</boolean>
             <key>energy</key>
             <real>10.0</real>
             <key>sleep</key>
@@ -11190,6 +11396,8 @@
          </map>
          <key>llCollisionSprite</key>
          <map>
+            <key>deprecated</key>
+            <boolean>true</boolean>
             <key>energy</key>
             <real>10.0</real>
             <key>sleep</key>
@@ -14144,10 +14352,10 @@
             </array>
             <key>tooltip</key>
             <string>Returns LineNumber from NotecardName via the dataserver event. The line index
-               starts at zero.\nIf the requested line is passed the end of the note-card the
-               dataserver event will return the constant EOF string.\nThe key returned by this
-               function is a unique identifier which will be supplied to the dataserver event in the
-               requested parameter.</string>
+               starts at zero in LSL, one in Lua.\nIf the requested line is passed the end of the
+               note-card the dataserver event will return the constant EOF string.\nThe key returned
+               by this function is a unique identifier which will be supplied to the dataserver
+               event in the requested parameter.</string>
          </map>
          <key>llGetNotecardLineSync</key>
          <map>
@@ -14179,10 +14387,10 @@
                </map>
             </array>
             <key>tooltip</key>
-            <string>Returns LineNumber from NotecardName. The line index starts at zero.\nIf the
-               requested line is past the end of the note-card the return value will be set to the
-               constant EOF string.\nIf the note-card is not cached on the simulator the return
-               value is the NAK string.</string>
+            <string>Returns LineNumber from NotecardName. The line index starts at zero in LSL, one
+               in Lua.\nIf the requested line is past the end of the note-card the return value will
+               be set to the constant EOF string.\nIf the note-card is not cached on the simulator
+               the return value is the NAK string.</string>
          </map>
          <key>llGetNumberOfNotecardLines</key>
          <map>
@@ -16172,6 +16380,38 @@
             </array>
             <key>tooltip</key>
             <string>Returns TRUE if avatar ID is a friend of the script owner.</string>
+         </map>
+         <key>llIsLinkGLTFMaterial</key>
+         <map>
+            <key>energy</key>
+            <real>10.0</real>
+            <key>sleep</key>
+            <real>0.0</real>
+            <key>return</key>
+            <string>integer</string>
+            <key>arguments</key>
+            <array>
+               <map>
+                  <key>link</key>
+                  <map>
+                     <key>type</key>
+                     <string>integer</string>
+                     <key>tooltip</key>
+                     <string>Link number to check.</string>
+                  </map>
+               </map>
+               <map>
+                  <key>face</key>
+                  <map>
+                     <key>type</key>
+                     <string>integer</string>
+                     <key>tooltip</key>
+                     <string>Side to check for a PBR material. Use ALL_SIDES to check for all.</string>
+                  </map>
+               </map>
+            </array>
+            <key>tooltip</key>
+            <string>Checks the face for a PBR render material.</string>
          </map>
          <key>llJson2List</key>
          <map>
@@ -19646,6 +19886,8 @@
          </map>
          <key>llRefreshPrimURL</key>
          <map>
+            <key>deprecated</key>
+            <boolean>true</boolean>
             <key>energy</key>
             <real>10.0</real>
             <key>sleep</key>
@@ -22322,6 +22564,47 @@
             <string>If a task exists in the link chain at LinkNumber, set the Face to color.\nSets
                the color of the linked child's side, specified by LinkNumber.</string>
          </map>
+         <key>llSetLinkGLTFOverrides</key>
+         <map>
+            <key>energy</key>
+            <real>10.0</real>
+            <key>sleep</key>
+            <real>0.0</real>
+            <key>return</key>
+            <string>void</string>
+            <key>arguments</key>
+            <array>
+               <map>
+                  <key>link</key>
+                  <map>
+                     <key>type</key>
+                     <string>integer</string>
+                     <key>tooltip</key>
+                     <string>Link number to check.</string>
+                  </map>
+               </map>
+               <map>
+                  <key>face</key>
+                  <map>
+                     <key>type</key>
+                     <string>integer</string>
+                     <key>tooltip</key>
+                     <string>Side to check for a PBR material. Use ALL_SIDES to check for all.</string>
+                  </map>
+               </map>
+               <map>
+                  <key>options</key>
+                  <map>
+                     <key>type</key>
+                     <string>list</string>
+                     <key>tooltip</key>
+                     <string>List of individual overrides to set.</string>
+                  </map>
+               </map>
+            </array>
+            <key>tooltip</key>
+            <string>Sets or changes GLTF Overrides set on the selected faces.</string>
+         </map>
          <key>llSetLinkMedia</key>
          <map>
             <key>energy</key>
@@ -22777,6 +23060,42 @@
             <key>tooltip</key>
             <string>Sets the specified PermissionFlag permission to the value specified by
                PermissionMask on the object the script is attached to.</string>
+         </map>
+         <key>llSetParcelForSale</key>
+         <map>
+            <key>energy</key>
+            <real>10.0</real>
+            <key>sleep</key>
+            <real>0.0</real>
+            <key>return</key>
+            <string>integer</string>
+            <key>arguments</key>
+            <array>
+               <map>
+                  <key>ForSale</key>
+                  <map>
+                     <key>type</key>
+                     <string>integer</string>
+                     <key>tooltip</key>
+                     <string>If TRUE, the parcel is put up for sale.</string>
+                  </map>
+               </map>
+               <map>
+                  <key>Options</key>
+                  <map>
+                     <key>type</key>
+                     <string>list</string>
+                     <key>tooltip</key>
+                     <string>A list of options to set for the sale.</string>
+                  </map>
+               </map>
+            </array>
+            <key>tooltip</key>
+            <string>Sets the parcel the object is on for sale.\nForSale is a boolean, if TRUE the
+               parcel is put up for sale. Options is a list of options to set for the sale, such as
+               price, authorized buyer, and whether to include objects on the parcel.\n Setting
+               ForSale to FALSE will remove the parcel from sale and clear any options that were
+               set.</string>
          </map>
          <key>llSetParcelMusicURL</key>
          <map>

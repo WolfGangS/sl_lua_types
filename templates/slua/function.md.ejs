@@ -1,7 +1,12 @@
 ## <% if (section.name){ %>[<%=section.name%>](<%=section.url%>).<%}%><%=func.name%>
-```
-<% if (section.name){ %><%=section.name%>.<%}%><%=func.name%><%-definition%>
-```
+<% if(definitions.length > 1) {%>
+### `<% if (section.name){ %><%=section.name%>.<%}%><%=func.name%>`
+<% for(const definition of definitions) {%>
+ - `<%-definition%>`
+<% } %>
+<% } else { %>
+### `<% if (section.name){ %><%=section.name%>.<%}%><%=func.name%>` `<%-definitions[0]%>`
+<% } %>
 
 <%=func.desc%>
 
@@ -29,9 +34,11 @@
 
 <details>
 <summary>Raw function spec json</summary>
+
 ```json
 <%-JSON.stringify(func,null,2)%>
 ```
+
 </details>
 
 <% if (section.name){ %>

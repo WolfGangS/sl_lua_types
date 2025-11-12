@@ -1,36 +1,57 @@
 {
   "tasks": {
     // build
-    "build": "deno task keyword-formatted && deno task 'build-*'",
-    "builddl": "deno task keyword-downloaded && deno task 'build-*'",
-    "markdown": "deno task keyword-formatted && deno task gen-markdown && cp -R dist docs/html/dist",
-    "markdowndl": "deno task keyword-downloaded && deno task gen-markdown && cp -R dist docs/html/dist",
+    "build": {
+      "dependencies": ["build-lsp","build-selene","build-json","build-vsc"]
+    },
+    "markdown": {
+      "command": "cp -R dist docs/html/dist",
+      "dependencies": ["gen-markdown"]
+    },
     // build steps
-    "build-lsp"   : "deno task 'gen-lsp-*'",
-    "build-selene": "deno task 'gen-selene-*'",
-    "build-json"  : "deno task 'gen-json-*'",
-    "build-vsc"   : "deno task 'gen-vsc-*'",
+    "build-lsp"   : {
+      "dependencies": ["gen-lsp-defs","gen-lsp-docs"]
+    },
+    "build-selene": {
+      "dependencies": ["gen-selene-stdlib", "gen-selene-config"]
+    },
+    "build-json"  : {
+      "dependencies": ["gen-json-slua", "gen-json-lsl"]
+    },
+    "build-vsc"   : {
+      "dependencies": ["gen-vsc-snippets"]
+    },
     // Generate lsp
-    "gen-lsp-defs": "deno -R -E src/main.ts data/keywords_lsl.llsd.xml slua-defs > dist/ll.d.luau",
-    "gen-lsp-docs": "deno -R -E src/main.ts data/keywords_lsl.llsd.xml slua-docs > dist/ll.d.json",
+    "gen-lsp-defs": "deno -R -E src/main.ts data/lsl_definitions.yaml slua-defs > dist/ll.d.luau",
+    "gen-lsp-docs": "deno -R -E src/main.ts data/lsl_definitions.yaml slua-docs > dist/ll.d.json",
     // Generate Selene
-    "gen-selene-stdlib": "deno -R -E src/main.ts data/keywords_lsl.llsd.xml slua-sele > dist/sl_selene_defs.yml",
-    "gen-selene-config": "deno -R -E src/main.ts data/keywords_lsl.llsd.xml slua-sele-config > dist/selene.toml",
+    "gen-selene-stdlib": "deno -R -E src/main.ts data/lsl_definitions.yaml slua-sele > dist/sl_selene_defs.yml",
+    "gen-selene-config": "deno -R -E src/main.ts data/lsl_definitions.yaml slua-sele-config > dist/selene.toml",
     // Generate JSON
-    "gen-json-slua" : "deno -R -E src/main.ts data/keywords_lsl.llsd.xml slua-json > dist/slua_keywords.json",
-    "gen-json-lsl"  : "deno -R -E src/main.ts data/keywords_lsl.llsd.xml lsl-json > dist/lsl_keywords.json",
+    "gen-json-slua" : "deno -R -E src/main.ts data/lsl_definitions.yaml slua-json > dist/slua_keywords.json",
+    "gen-json-lsl"  : "deno -R -E src/main.ts data/lsl_definitions.yaml lsl-json > dist/lsl_keywords.json",
     // Build VSC
-    "gen-vsc-sippets": "deno -R -E src/main.ts data/keywords_lsl.llsd.xml slua-vsc-snippets > dist/slua.code-snippets",
+    "gen-vsc-snippets": "deno -R -E src/main.ts data/lsl_definitions.yaml slua-vsc-snippets > dist/slua.code-snippets",
     // Generate Markdown
-    "gen-markdown": "deno run -R -W -E src/main.ts ./data/keywords_lsl.llsd.xml slua-markdown docs/output docs/html",
+    "gen-markdown": "deno run -R -W -E src/main.ts ./data/lsl_definitions.yaml slua-markdown docs/output docs/html",
     // build and install
     "install": "deno task build && deno task copy-to-install",
     "copy-to-install": "mkdir -p $HOME/.sl-luau && cp ./dist/* $HOME/.sl-luau/.",
-    // Keyword manip
-    "keyword-formatted": "cp data/keywords_lsl_formatted.llsd.xml data/keywords_lsl.llsd.xml",
-    "keyword-downloaded": "cp data/keywords_lsl_download.llsd.xml data/keywords_lsl.llsd.xml"
+    "wlf": {
+      "command": "cp dist/* ../../slua/.types/.",
+      "dependencies": ["build"]
+    }
   },
   "imports": {
-    "@std/assert": "jsr:@std/assert@1"
+    "@std/assert": "jsr:@std/assert@1",
+    "@std/fs": "jsr:@std/fs@^1.0.19",
+    "@std/path": "jsr:@std/path@^1.1.2",
+    "@std/toml": "jsr:@std/toml@^1.0.11",
+    "@std/yaml": "jsr:@std/yaml@^1.0.10",
+    "ejs": "npm:ejs@^3.1.10",
+    "markdown-to-html-cli": "npm:markdown-to-html-cli@^5.0.3"
+  },
+  "fmt": {
+    "indentWidth": 4
   }
 }
