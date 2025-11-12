@@ -16,6 +16,7 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
+          cache: true
       - name: Download Yaml Defs
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         run: |
