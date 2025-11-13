@@ -7,6 +7,10 @@ import { buildSluaSelene } from "./slua/slua-sele-gen.ts";
 import { buildSluaSeleneConfig } from "./slua/slua-sele-conf-gen.ts";
 import { buildSluaVSCodeSnippets } from "./slua/slua-vsc-snippets-gen.ts";
 import { buildLSLJsonFromYML } from "./yaml/readLSLDefinitionsYAML.ts";
+import {
+    buildLSLBuiltIns,
+    buildLSLBuiltInsString,
+} from "./lsl/lsl-builtins.ts";
 
 const keywordsFile = Deno.args[0];
 const output = Deno.args[1];
@@ -32,6 +36,11 @@ switch (output) {
     case "lsl-json":
         console.log(
             JSON.stringify(lslDef, null, 2),
+        );
+        break;
+    case "lsl-builtins":
+        console.log(
+            buildLSLBuiltInsString(lslDef),
         );
         break;
     case "slua-json":
