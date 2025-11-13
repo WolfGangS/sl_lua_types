@@ -2,7 +2,7 @@
   "tasks": {
     // build
     "build": {
-      "dependencies": ["build-lsp","build-selene","build-json","build-vsc"]
+      "dependencies": ["build-lsp","build-selene","build-json","build-vsc","build-builtins"]
     },
     "markdown": {
       "command": "cp -R dist docs/html/dist",
@@ -17,6 +17,9 @@
     },
     "build-json"  : {
       "dependencies": ["gen-json-slua", "gen-json-lsl"]
+    },
+    "build-builtins" : {
+      "dependencies": ["gen-builtins-lsl"]
     },
     "build-vsc"   : {
       "dependencies": ["gen-vsc-snippets"]
@@ -34,6 +37,8 @@
     "gen-vsc-snippets": "deno -R -E src/main.ts data/lsl_definitions.yaml slua-vsc-snippets > dist/slua.code-snippets",
     // Generate Markdown
     "gen-markdown": "deno run -R -W -E src/main.ts ./data/lsl_definitions.yaml slua-markdown docs/output docs/html",
+    // Generate Builtins
+    "gen-builtins-lsl" : "deno run -R -W -E src/main.ts ./data/lsl_definitions.yaml lsl-builtins > dist/builtins.txt",
     // build and install
     "install": "deno task build && deno task copy-to-install",
     "copy-to-install": "mkdir -p $HOME/.sl-luau && cp ./dist/* $HOME/.sl-luau/.",
