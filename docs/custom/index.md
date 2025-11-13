@@ -17,6 +17,8 @@ checking to vscode and other editors that support the lsp protocol
 - Selene [Standard Library](dist/sl_selene_defs.yml) and
   [Toml Config](dist/selene.toml)
 - [Snippets](dist/slua.code-snippets)
+- [Builtins](dist/builtins.txt) text file for use with luau-compile and
+  [LSL-PyOptimizer](https://github.com/Sei-Lisa/LSL-PyOptimizer) scripts
 
 With [Instructions](readme.html) on how to set them up
 
