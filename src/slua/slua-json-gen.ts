@@ -1868,6 +1868,11 @@ function buildSLuaEventsFromLSL(lslEvents: EventDefs): SLuaClassDef {
                 "boolean",
                 [
                     newArg(
+                        "eventName",
+                        "name of the Event to hook",
+                        newCustomType("EventName"),
+                    ),
+                    newArg(
                         "handler",
                         "The name of the function to handle the event",
                         EventHandler,
