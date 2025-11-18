@@ -9,7 +9,7 @@ import {
     TypeDefs,
 } from "../types.d.ts";
 import { ucFirst } from "../util.ts";
-import { castValueType, cleanTooltip, hasEffect } from "../lsl/lslCommon.ts";
+import { castValueType, cleanTooltip } from "../lsl/lslCommon.ts";
 
 type YAMLConst = {
     tooltip: string;
@@ -43,6 +43,7 @@ type YAMLFunc = {
     "index-semantics"?: boolean;
     "linden-experience"?: boolean;
     "mono-sleep"?: number;
+    "must-use"?: boolean;
 };
 
 type YAMLFuncArg = {
@@ -82,7 +83,7 @@ export async function buildLSLJsonFromYML(file: string): Promise<LSLDef> {
             desc: cleanTooltip(yFunc.tooltip),
             energy: yFunc.energy,
             sleep: yFunc.sleep,
-            must_use: !hasEffect(funcName),
+            must_use: (yFunc["must-use"] || yFunc.pure) || false,
             link: priv
                 ? ""
                 : "https://wiki.secondlife.com/wiki/" + ucFirst(funcName),

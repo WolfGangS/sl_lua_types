@@ -42,6 +42,7 @@
     // build and install
     "install": "deno task build && deno task copy-to-install",
     "copy-to-install": "mkdir -p $HOME/.sl-luau && cp ./dist/* $HOME/.sl-luau/.",
+    "must-use": "deno -R -E src/main.ts data/lsl_definitions.yaml must-use",
     "wlf": {
       "command": "cp dist/* ../../slua/.types/.",
       "dependencies": ["build"]

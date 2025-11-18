@@ -67,6 +67,14 @@ switch (output) {
     case "slua-sele-config":
         console.log(await buildSluaSeleneConfig(lslDef));
         break;
+    case "must-use":
+        console.log(
+            Object.values(lslDef.functions).filter((f) =>
+                f.must_use && f.pure !== true
+            )
+                .map((f) => f.name).join("\n"),
+        );
+        break;
     case "slua-markdown":
         await generateSLuaMarkdown(lslDef, Deno.args[2], Deno.args[3]);
         break;
@@ -80,4 +88,6 @@ switch (output) {
         // case "sele":
         //   buildSelene(map);
         //   break;
+    default:
+        throw `Unrecognized option '${output}'`;
 }

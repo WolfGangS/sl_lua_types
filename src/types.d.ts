@@ -22,6 +22,7 @@ export type FuncDef = {
     "index-semantics"?: boolean;
     "linden-experience"?: boolean;
     "mono-sleep"?: number;
+    "must-user"?: boolean;
 };
 export type FuncArgs = FuncArg[];
 export type FuncArg = {
