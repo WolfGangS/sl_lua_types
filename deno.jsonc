@@ -1,5 +1,8 @@
 {
   "tasks": {
+    "all": {
+      "dependencies": ["build", "markdown"]
+    },
     // build
     "build": {
       "dependencies": ["build-lsp","build-selene","build-json","build-vsc","build-builtins"]

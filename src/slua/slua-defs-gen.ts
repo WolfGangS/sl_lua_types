@@ -32,6 +32,15 @@ export async function buildSluaTypeDefs(
         "\n" +
         outputTypeDefs(data.types) +
         "\n\n" +
+        outpufClassDefs(
+            Object.values(data.types).reduce((clsDefs, typeDef) => {
+                if (typeDef.type instanceof Array) return clsDefs;
+                if (typeDef.type.def != "class") return clsDefs;
+                clsDefs[typeDef.name] = typeDef.type.value;
+                return clsDefs;
+            }, {}),
+        ) +
+        "\n\n" +
         outpufClassDefs(data.classes) +
         "\n\n" +
         outputFunctionDefs(data.global.props);
@@ -58,7 +67,12 @@ function outpufClassDefs(classes: StrObj<SLuaClassDef>): string {
         for (const fkey in cls.funcs) {
             const func = cls.funcs[fkey];
             for (const result of func.signatures) {
-                const args = result.args.map(mapArgToFunctionString);
+                const self: string[] = func.takesSelf ? ["self"] : [];
+                const args = [
+                    ...self,
+                    ...(func.takesSelf ? result.args.slice(1) : result.args)
+                        .map(mapArgToFunctionString),
+                ];
                 output += `  function ${func.name}(${args.join(", ")}): ${
                     mapResultToFunctionString(result.result)
                 }`;
@@ -86,7 +100,7 @@ function outputTypeDefs(typeDefs: StrObj<SLuaTypeDef>): string {
                     break;
                 case "class":
                     if (typeArray) throw `Cannot output type class array`;
-                    typeStrs.push(outputClassType(typ));
+                    // typeStrs.push(outpufClassDefs({[def.name]:typ.value}));//(outputClassType(typ));
                     break;
                 case "table":
                     typeStrs.push(outputTableType(typ));
@@ -105,7 +119,9 @@ function outputTypeDefs(typeDefs: StrObj<SLuaTypeDef>): string {
         // } else {
 
         // }
-        output.push(`type ${def.name} = ` + typeStrs.join("|"));
+        if (typeStrs.length) {
+            output.push(`type ${def.name} = ` + typeStrs.join("|"));
+        }
     }
     return output.join("\n") + "\n";
 }
